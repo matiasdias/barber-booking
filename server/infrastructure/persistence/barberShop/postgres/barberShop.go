@@ -27,7 +27,7 @@ func (pg *PGBarberShop) Create(ctx *gin.Context, b *barberShop.BarberShop) (err 
 
 func (pg *PGBarberShop) List(ctx *gin.Context) (barberShops []barberShop.ListBarberShop, err error) {
 
-	query := "SELECT id, nome, cidade, rua, numero_residencia, ponto_referencia, contato, criadoem, updatedem FROM barbearia"
+	query := "SELECT id, nome, cidade, rua, numero_residencia, ponto_referencia, contato, data_criacao, data_atualizacao FROM barbearia"
 
 	rows, err := pg.DB.QueryContext(ctx, query)
 	if err != nil {

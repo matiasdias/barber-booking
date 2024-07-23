@@ -1,7 +1,5 @@
 package hoursBarber
 
-import "time"
-
 type CreateHoursBarber struct {
 	ID             *int64  `conversor:"id" json:"id"`
 	BarberID       *int64  `conversor:"barbeiro_id" json:"barbeiro_id" binding:"required"`
@@ -12,12 +10,9 @@ type CreateHoursBarber struct {
 	EndTime        *string `conversor:"horario_final" json:"horario_final" binding:"required"`
 }
 
-type HoursBarbers struct {
-	DayOfWeek      *string    `conversor:"dia_semana"`
-	StartTime      *string    `conversor:"horario_inicial"`
-	LunchStartTime *string    `conversor:"horario_almoco_inicial"`
-	LunchEndTime   *string    `conversor:"horario_almoco_final"`
-	EndTime        *string    `conevrsor:"horario_final"`
-	CreatedAt      *time.Time `conversor:"criado_em"`
-	UpdatedAt      *time.Time `conversor:"updated_em"`
+type CreateException struct {
+	ID            *int64  `conversor:"id" json:"id"`
+	BarberID      *int64  `conversor:"barbeiro_id" json:"barbeiro_id" binding:"required"`
+	DateException *string `conversor:"data_execeção" json:"data_execeção" binding:"required"`
+	Reason        *string `conversor:"motivo" json:"motivo"`
 }

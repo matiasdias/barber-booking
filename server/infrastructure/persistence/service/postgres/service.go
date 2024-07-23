@@ -26,7 +26,7 @@ func (pg *PGService) Create(ctx *gin.Context, service *service.Services) (err er
 
 func (pg *PGService) List(ctx *gin.Context) (services []service.ListService, err error) {
 
-	query := "SELECT id, nome, preco, criadoem, updatedem FROM servico"
+	query := "SELECT id, nome, preco, data_criacao, data_atualizacao FROM servico"
 
 	rows, err := pg.DB.QueryContext(ctx, query)
 	if err != nil {

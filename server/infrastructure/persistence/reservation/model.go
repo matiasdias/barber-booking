@@ -22,8 +22,8 @@ type Reserva struct {
 	EndTime                 *string    `json:"horario_final" conversor:"horario_final"`
 	Duration                *string    `json:"duracao" conversor:"duracao"`
 	Status                  *string    `json:"status" conversor:"status"`
-	CreatedAt               *time.Time `json:"criado_em" conversor:"criado_em"`
-	UpdatedAt               *time.Time `json:"atualizado_em" conversor:"atualizado_em"`
+	CreatedAt               *time.Time `json:"data_criacao" conversor:"data_criacao"`
+	UpdatedAt               *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`
 }
 
 type Barber struct {

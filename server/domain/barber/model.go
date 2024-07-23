@@ -12,6 +12,6 @@ type Barbers struct {
 	ID       *int64     `json:"id" conversor:"id"`
 	Name     *string    `json:"nome" conversor:"nome"`
 	Contato  *string    `json:"contato" conversor:"contato"`
-	CriadoEm *time.Time `json:"criado_em" conversor:"criado_em"`
-	UpdateEm *time.Time `json:"updated_em" conversor:"updated_em"`
+	CriadoEm *time.Time `json:"data_criacao" conversor:"data_criacao"`
+	UpdateEm *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`
 }

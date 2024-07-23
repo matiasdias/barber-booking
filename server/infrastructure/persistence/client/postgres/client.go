@@ -26,7 +26,7 @@ func (pg *PGClient) Create(ctx *gin.Context, cliente *client.Client) (err error)
 
 func (pg *PGClient) List(ctx *gin.Context) (clients []client.Clients, err error) {
 
-	query := "SELECT id, nome, email, contato, senha, criadoem, updatedem FROM cliente order by criadoem ASC"
+	query := "SELECT id, nome, email, contato, senha, data_criacao, data_atualizacao FROM cliente order by data_criacao ASC"
 	rows, err := pg.DB.QueryContext(ctx, query)
 	if err != nil {
 		log.Println("Erro ao consultar clientes:", err)
