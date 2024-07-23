@@ -13,6 +13,6 @@ type CreateReservation struct {
 	EndTime                *string    `json:"horario_final" converson:"horario_final"`
 	Duration               *string    `json:"duracao" converson:"duracao" binding:"required"`
 	Status                 *string    `json:"status" converson:"status"`
-	CriadoEm               *time.Time `conversor:"criado_em" json:"data_criacao"`
-	UpdateEm               *time.Time `conversor:"updated_em" json:"data_atualizacao"`
+	CriadoEm               *time.Time `conversor:"data_criacao" json:"data_criacao"`
+	UpdateEm               *time.Time `conversor:"data_atualizacao" json:"data_atualizacao"`
 }
