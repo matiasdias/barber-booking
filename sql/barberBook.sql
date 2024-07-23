@@ -49,6 +49,9 @@ updatedem timestamp,
 CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id)
 );
 
+
+CREATE TYPE tipo_status AS ENUM ('ativo', 'cancelado', 'pendente');
+
 CREATE TABLE IF NOT EXISTS reserva (
 id serial PRIMARY KEY,
 barbeiro_id integer NOT NULL,
@@ -58,13 +61,23 @@ data_reserva date NOT NULL,
 data_reserva_original date,
 horario_inicial_reserva time NOT NULL,
 duracao interval NOT NULL,
-status varchar(20) DEFAULT 'ativa',
+status tipo_status DEFAULT 'ativo',
 horario_final time GENERATED ALWAYS AS (horario_inicial_reserva + duracao) STORED,
 criadoem timestamp DEFAULT now() NOT NULL, 
 updatedem timestamp,
 CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id),
 CONSTRAINT id_cliente_fk FOREIGN KEY (cliente_id) REFERENCES cliente(id),
 CONSTRAINT id_barbearia_fk FOREIGN KEY (barbearia_id) REFERENCES barbearia(id)
+);
+
+CREATE TABLE IF NOT EXISTS horario_trabalho_excecao (
+    id serial PRIMARY KEY,
+    barbeiro_id integer NOT NULL,
+    data_excecao date NOT NULL,
+    motivo text,
+    criadoem timestamp DEFAULT now() NOT NULL,
+    updatedem timestamp,
+    CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id)
 );
 
 CREATE OR REPLACE FUNCTION day_of_week_to_text(dow integer) RETURNS VARCHAR AS $$
@@ -118,7 +131,7 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS trig_valida_horario_reserva ON reserva;
 
 CREATE TRIGGER trig_valida_horario_reserva
-BEFORE INSERT ON reserva
+BEFORE INSERT ON UPDATE reserva
 FOR EACH ROW EXECUTE FUNCTION valida_horario_reserva();
 
 CREATE EXTENSION IF NOT EXISTS unaccent;
