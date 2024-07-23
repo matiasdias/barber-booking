@@ -19,6 +19,7 @@ func Router(r *gin.RouterGroup) {
 	r.POST("barberShop/create", barberShop.Create)
 	r.POST("hoursBarber/create", hoursBarber.Create)
 	r.POST("reservation/create", reservation.Create)
+	r.POST("hoursBarberException/create", hoursBarber.CreateException)
 
 	r.GET("client/list", client.List)
 	r.GET("barber/list", barber.List)
