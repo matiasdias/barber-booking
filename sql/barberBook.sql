@@ -4,24 +4,24 @@ nome varchar(250) NOT NULL,
 email varchar(250) NOT NULL UNIQUE,
 contato varchar(20) UNIQUE NOT NULL,
 senha varchar(100) NOT NULL,
-criadoem timestamp DEFAULT now() NOT NULL,
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL,
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS servico (
 id serial PRIMARY KEY,
 nome varchar(150) NOT NULL,
 preco numeric(10, 2),
-craidoem timestamp DEFAULT now() NOT NULL,
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL,
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS barbeiro (
 id serial PRIMARY KEY,
 nome varchar(150) NOT NULL,
 contato varchar(20) UNIQUE,
-criadoem timestamp DEFAULT now() NOT NULL,
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL,
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS barbearia (
@@ -32,8 +32,8 @@ rua varchar(255) NOT NULL,
 numero_residencia integer NOT NULL,
 ponto_referencia varchar(255),
 contato varchar(20) UNIQUE,
-criadoem timestamp DEFAULT now() NOT NULL, 
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL, 
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS horario_trabalho_barbeiro (
@@ -44,8 +44,8 @@ horario_inicio time NOT NULL,
 horario_almoco_inicio time NOT NULL,
 horario_almoco_fim time NOT NULL,
 horario_fim time NOT NULL,
-criadoem timestamp DEFAULT now() NOT NULL, 
-updatedem timestamp,
+data_criacao timestamp DEFAULT now() NOT NULL, 
+data_atualizacao timestamp,
 CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id)
 );
 
@@ -63,8 +63,8 @@ horario_inicial_reserva time NOT NULL,
 duracao interval NOT NULL,
 status tipo_status DEFAULT 'ativo',
 horario_final time GENERATED ALWAYS AS (horario_inicial_reserva + duracao) STORED,
-criadoem timestamp DEFAULT now() NOT NULL, 
-updatedem timestamp,
+data_criacao timestamp DEFAULT now() NOT NULL, 
+data_atualizacao timestamp,
 CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id),
 CONSTRAINT id_cliente_fk FOREIGN KEY (cliente_id) REFERENCES cliente(id),
 CONSTRAINT id_barbearia_fk FOREIGN KEY (barbearia_id) REFERENCES barbearia(id)
@@ -75,8 +75,8 @@ CREATE TABLE IF NOT EXISTS horario_trabalho_excecao (
     barbeiro_id integer NOT NULL,
     data_excecao date NOT NULL,
     motivo text,
-    criadoem timestamp DEFAULT now() NOT NULL,
-    updatedem timestamp,
+    data_criacao timestamp DEFAULT now() NOT NULL,
+    data_atualizacao timestamp,
     CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id)
 );
 
@@ -131,7 +131,7 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS trig_valida_horario_reserva ON reserva;
 
 CREATE TRIGGER trig_valida_horario_reserva
-BEFORE INSERT ON UPDATE reserva
+BEFORE INSERT ON reserva
 FOR EACH ROW EXECUTE FUNCTION valida_horario_reserva();
 
 CREATE EXTENSION IF NOT EXISTS unaccent;

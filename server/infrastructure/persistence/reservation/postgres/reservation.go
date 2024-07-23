@@ -67,7 +67,7 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
 func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.ReservationList, err error) {
 
 	query := `
-		SELECT r.data_reserva, r.horario_inicial_reserva, r.duracao, r.status, r.horario_final, r.criadoem, r.updatedem,
+		SELECT r.data_reserva, r.horario_inicial_reserva, r.duracao, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
 		ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
 		c.nome, c.email, c.contato
 		FROM reserva r

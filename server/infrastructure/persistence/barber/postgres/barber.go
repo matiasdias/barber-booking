@@ -26,7 +26,7 @@ func (pg *PGBarber) Create(ctx *gin.Context, barber *barber.Barber) error {
 
 func (pg *PGBarber) List(ctx *gin.Context) (barbers []barber.Barbers, err error) {
 
-	query := "SELECT id, nome, contato, criadoem, updatedem FROM barbeiro ORDER BY criadoem ASC"
+	query := "SELECT id, nome, contato, data_criacao, data_atualizacao FROM barbeiro ORDER BY data_criacao ASC"
 	rows, err := pg.DB.QueryContext(ctx, query)
 	if err != nil {
 		log.Println("Erro ao consultar clientes:", err)
