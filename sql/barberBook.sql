@@ -65,6 +65,7 @@ status tipo_status DEFAULT 'ativo',
 horario_final time GENERATED ALWAYS AS (horario_inicial_reserva + duracao) STORED,
 data_criacao timestamp DEFAULT now() NOT NULL, 
 data_atualizacao timestamp,
+data_suspensao timestamp,
 CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id),
 CONSTRAINT id_cliente_fk FOREIGN KEY (cliente_id) REFERENCES cliente(id),
 CONSTRAINT id_barbearia_fk FOREIGN KEY (barbearia_id) REFERENCES barbearia(id)
