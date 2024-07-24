@@ -43,11 +43,6 @@ func CreateHoursBarberExecption(ctx *gin.Context, hoursBarberExecepion *CreateEx
 	}
 	dados.DateException = formatDateExecption.DateException
 
-	if err = service.MarkReservationAsPending(ctx, dados.BarberID, dados.DateException); err != nil {
-		log.Printf("Failed to mark reservation as pending: %v", err)
-		return
-	}
-
 	exists, err := service.HoursExecptionExists(ctx, dados)
 	if err != nil {
 		log.Printf("Failed to check if hours exception exists: %v", err)
@@ -56,6 +51,15 @@ func CreateHoursBarberExecption(ctx *gin.Context, hoursBarberExecepion *CreateEx
 	if exists {
 		err = errors.New("exception already exists")
 		return
+	}
+
+	marked, err := service.MarkReservationAsPending(ctx, dados.BarberID, dados.DateException)
+	if err != nil {
+		log.Printf("Failed to mark reservation as pending: %v", err)
+		return
+	}
+	if !marked {
+		log.Println("Nenhuma reserva foi marcada como pendente.")
 	}
 
 	if err = service.CreateHoursBarberException(ctx, dados); err != nil {

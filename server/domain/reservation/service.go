@@ -130,6 +130,7 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 			r.Status = res[i].Reservations[j].Status
 			r.CreatedAt = res[i].Reservations[j].CreatedAt
 			r.UpdatedAt = res[i].Reservations[j].UpdatedAt
+			r.DataSuspensao = res[i].Reservations[j].DataSuspensao
 			reser.Reservations[j] = r
 		}
 		reservations[i] = reser

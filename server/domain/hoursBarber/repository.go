@@ -36,7 +36,7 @@ func (r *repository) CreateHoursBarberException(ctx *gin.Context, hoursException
 	return r.pgExcption.CreateHoursBarberException(ctx, hoursException)
 }
 
-func (r *repository) MarkReservationAsPending(ctx *gin.Context, BarberID *int64, hoursExeptionID *string) error {
+func (r *repository) MarkReservationAsPending(ctx *gin.Context, BarberID *int64, hoursExeptionID *string) (marked bool, err error) {
 	return r.pgExcption.MarkReservationAsPending(ctx, BarberID, hoursExeptionID)
 }
 

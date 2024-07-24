@@ -176,7 +176,7 @@ func (s *Service) ValidateHoursBarberExecption(hoursBarberExecption *HoursBarber
 
 }
 
-func (s *Service) MarkReservationAsPending(ctx *gin.Context, BarberID *int64, hoursExeptionID *string) (err error) {
+func (s *Service) MarkReservationAsPending(ctx *gin.Context, BarberID *int64, hoursExeptionID *string) (marked bool, err error) {
 	return s.repo.MarkReservationAsPending(ctx, BarberID, hoursExeptionID)
 }
 

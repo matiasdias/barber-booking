@@ -30,13 +30,14 @@ func (pg *PGHoursBarberException) CreateHoursBarberException(ctx *gin.Context, h
 	return nil
 }
 
-func (pg *PGHoursBarberException) MarkReservationAsPending(ctx *gin.Context, barberID *int64, hoursExeptionID *string) error {
+func (pg *PGHoursBarberException) MarkReservationAsPending(ctx *gin.Context, barberID *int64, hoursExeptionID *string) (bool, error) {
 	query := `
 	select id from reserva where barbeiro_id = $1 and data_reserva = $2 and status = 'ativo'
 	`
 	rows, err := pg.DB.QueryContext(ctx, query, barberID, hoursExeptionID)
 	if err != nil {
 		log.Println("Erro ao consultar reservas:", err)
+		return false, err
 	}
 	defer rows.Close()
 
@@ -45,21 +46,26 @@ func (pg *PGHoursBarberException) MarkReservationAsPending(ctx *gin.Context, bar
 		var reservaID int64
 		if err := rows.Scan(&reservaID); err != nil {
 			log.Println("Failed to scan reservation id: %w:", err)
-			return err
+			return false, err
 		}
 		reservaIDs = append(reservaIDs, reservaID)
 	}
 
+	if len(reservaIDs) == 0 {
+		return false, nil
+	}
+
 	for _, reservaID := range reservaIDs {
 		updateQuery := `
-			update reserva set status = 'pendente' where id = $1
+			update reserva set status = 'pendente', data_suspensao = now() where id = $1
 		`
 		_, err := pg.DB.ExecContext(ctx, updateQuery, reservaID)
 		if err != nil {
-			log.Println("failed to update reservation status: %w", err)
+			log.Println("Failed to update reservation status: %w", err)
+			return false, err
 		}
 	}
-	return nil
+	return true, nil
 }
 
 func (pg *PGHoursBarberException) HoursExecptionExists(ctx *gin.Context, hoursException *hoursBarber.HoursBarberException) (exists bool, err error) {

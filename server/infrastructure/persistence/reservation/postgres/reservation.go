@@ -43,9 +43,8 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
         SELECT EXISTS (
             SELECT 1
             FROM reserva
-            WHERE barbeiro_id = $1
-            AND data_reserva = $2
-            AND ($3::time, $3::time + $4::interval) OVERLAPS (horario_inicial_reserva, horario_final)
+            WHERE (barbeiro_id = $1 AND data_reserva = $2 AND ($3::time, $3::time + $4::interval) OVERLAPS (horario_inicial_reserva, horario_final))
+            OR (cliente_id = $5 AND data_reserva = $2 AND ($3::time, $3::time + $4::interval) OVERLAPS (horario_inicial_reserva, horario_final))
         )
     `
 	err := pg.DB.QueryRowContext(ctx, query,
@@ -53,13 +52,14 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
 		reser.DateReservation,
 		reser.StartTime,
 		reser.Duration,
+		reser.ClientID,
 	).Scan(&exists)
 	if err != nil {
 		log.Println("Erro ao consultar se existe conflito de reservas:", err)
 		return err
 	}
 	if exists {
-		return errors.New("Conflito de horário: já existe uma reserva para o barbeiro nesse horário especifico")
+		return errors.New("Conflito de horário: já existe uma reserva para o barbeiro ou uma reserva para o cliente nesse horário especifico")
 	}
 	return nil
 }
@@ -68,7 +68,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 
 	query := `
 		SELECT r.data_reserva, r.horario_inicial_reserva, r.duracao, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
-		ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
+		r.data_suspensao,ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
 		c.nome, c.email, c.contato
 		FROM reserva r
 		JOIN barbeiro b ON b.id = r.barbeiro_id
@@ -93,6 +93,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			horarioFinal          *string
 			criadoEm              *time.Time
 			updatedEm             *time.Time
+			dataSuspensao         *time.Time
 			shopName              *string
 			shopCidade            *string
 			shopRua               *string
@@ -114,6 +115,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			&horarioFinal,
 			&criadoEm,
 			&updatedEm,
+			&dataSuspensao,
 			&shopName,
 			&shopCidade,
 			&shopRua,
@@ -159,6 +161,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			EndTime:         horarioFinal,
 			CreatedAt:       criadoEm,
 			UpdatedAt:       updatedEm,
+			DataSuspensao:   dataSuspensao,
 		}
 
 		// Construa uma chave única para a combinação de Shop, Barber e Client

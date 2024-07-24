@@ -31,6 +31,7 @@ type Reserva struct {
 	Status                  *string    `json:"status" conversor:"status"`
 	CreatedAt               *time.Time `json:"data_criacao" conversor:"data_criacao"`
 	UpdatedAt               *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`
+	DataSuspensao           *time.Time `json:"data_suspensao" conversor:"data_suspensao"`
 }
 
 type Barber struct {
