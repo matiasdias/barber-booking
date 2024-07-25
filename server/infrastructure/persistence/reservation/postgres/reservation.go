@@ -192,3 +192,25 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 
 	return reservations, nil
 }
+
+func (pg *PGReservation) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dataReservation *string) (bool, error) {
+	query := `
+	SELECT EXISTS (
+		SELECT 1 
+		FROM horario_excecao 
+		WHERE barbeiro_id = $1 
+		AND data_excecao = $2
+	)
+`
+	var exists bool
+	err := pg.DB.QueryRowContext(ctx, query, barberID, dataReservation).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		log.Printf("Failed to check exception for barber: %v", err)
+		return false, err
+	}
+	return exists, nil
+
+}

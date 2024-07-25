@@ -16,15 +16,15 @@ type Reservation struct {
 }
 
 type Reserva struct {
-	DateReservation         *string    `json:"data_reserva" conversor:"data_reserva"`
-	DateReservationOriginal *string    `json:"data_reserva_original" conversor:"data_reserva_original"`
-	StartTime               *string    `json:"horario_inicial" conversor:"horario_inicial"`
-	EndTime                 *string    `json:"horario_final" conversor:"horario_final"`
-	Duration                *string    `json:"duracao" conversor:"duracao"`
-	Status                  *string    `json:"status" conversor:"status"`
-	CreatedAt               *time.Time `json:"data_criacao" conversor:"data_criacao"`
-	UpdatedAt               *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`
-	DataSuspensao           *time.Time `json:"data_suspensao" conversor:"data_suspensao"`
+	DateReservation         *string    `conversor:"data_reserva" json:"data_reserva"`
+	DateReservationOriginal *string    `conversor:"data_reserva_original" json:"data_reserva_original"`
+	StartTime               *string    `conversor:"horario_inicial" json:"horario_inicial"`
+	EndTime                 *string    `conversor:"horario_final" json:"horario_final"`
+	Duration                *string    `conversor:"duracao" json:"duracao"`
+	Status                  *string    `conversor:"status" json:"status"`
+	CreatedAt               *time.Time `conversor:"data_criacao" json:"data_criacao"`
+	UpdatedAt               *time.Time `conversor:"data_atualizacao" json:"data_atualizacao"`
+	DataSuspensao           *time.Time `conversor:"data_suspensao" json:"data_suspensao"`
 }
 
 type Barber struct {

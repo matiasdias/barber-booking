@@ -3,6 +3,7 @@ package reservation
 import (
 	"api/server/database"
 	"api/server/domain/reservation"
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -27,11 +28,6 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 		Status:          reser.Status,
 	}
 
-	if err = service.CheckConflictReservation(ctx, r); err != nil {
-		log.Printf("Failed to check conflict reservation: %v", err)
-		return err
-	}
-
 	formatHours, err := service.ValidateHoursRservation(r)
 	if err != nil {
 		log.Printf("Failed to validate reservation hours: %v", err)
@@ -41,6 +37,23 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 	r.StartTime = formatHours.StartTime
 	r.DateReservation = formatHours.DateReservation
 	r.Duration = formatHours.Duration
+
+	if err = service.CheckConflictReservation(ctx, r); err != nil {
+		log.Printf("Failed to check conflict reservation: %v", err)
+		return err
+	}
+
+	// Verifica se a data da reserva está marcada como exceção
+	exists, err := service.CheckExceptionForBarber(ctx, r.BarberID, r.DateReservation)
+	if err != nil {
+		log.Printf("Failed to check exception for barber: %v", err)
+		return err
+	}
+	if exists {
+		err = fmt.Errorf("A data %s está marcada como exceção de trabalho para este barbeiro.", *r.DateReservation)
+		log.Println(err)
+		return err
+	}
 
 	if err = service.Create(ctx, r); err != nil {
 		log.Printf("Fails to add reservation: %v", err)

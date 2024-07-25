@@ -137,3 +137,7 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 	}
 	return
 }
+
+func (s *Service) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dataReservation *string) (exise bool, err error) {
+	return s.repo.CheckExceptionForBarber(ctx, barberID, dataReservation)
+}

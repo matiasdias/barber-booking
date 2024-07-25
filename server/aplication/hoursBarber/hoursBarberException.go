@@ -9,16 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//-- Verifica se a data da reserva está marcada como uma exceção
-//    IF EXISTS (
-//        SELECT 1
-//        FROM horario_excecao
-//        WHERE id_barbeiro = NEW.id_barbeiro
-//        AND data_excecao = NEW.data_reserva
-//    ) THEN
-//        RAISE EXCEPTION 'A data % está marcada como exceção para o barbeiro.', NEW.data_reserva;
-//    END IF;
-
 func CreateHoursBarberExecption(ctx *gin.Context, hoursBarberExecepion *CreateException) (err error) {
 	db, err := database.Connection()
 	if err != nil {
