@@ -130,7 +130,7 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 			r.Status = res[i].Reservations[j].Status
 			r.CreatedAt = res[i].Reservations[j].CreatedAt
 			r.UpdatedAt = res[i].Reservations[j].UpdatedAt
-			r.DataSuspensao = res[i].Reservations[j].DataSuspensao
+			r.DateReservationOriginal = res[i].Reservations[j].DateReservationOriginal
 			reser.Reservations[j] = r
 		}
 		reservations[i] = reser
@@ -140,4 +140,15 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 
 func (s *Service) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dataReservation *string) (exise bool, err error) {
 	return s.repo.CheckExceptionForBarber(ctx, barberID, dataReservation)
+}
+
+func (s *Service) UpdateReservation(ctx *gin.Context, reservationID *int64, reser *Reservation) (err error) {
+	dados := &reservation.Reservation{
+		ID:              reservationID,
+		BarberID:        reser.BarberID,
+		DateReservation: reser.DateReservation,
+		StartTime:       reser.StartTime,
+		Status:          reser.Status,
+	}
+	return s.repo.UpdateReservation(ctx, reservationID, dados)
 }

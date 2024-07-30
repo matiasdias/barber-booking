@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"api/server/infrastructure/persistence/reservation"
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -68,7 +69,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 
 	query := `
 		SELECT r.data_reserva, r.horario_inicial_reserva, r.duracao, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
-		r.data_suspensao,ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
+		r.data_reserva_original, ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
 		c.nome, c.email, c.contato
 		FROM reserva r
 		JOIN barbeiro b ON b.id = r.barbeiro_id
@@ -93,7 +94,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			horarioFinal          *string
 			criadoEm              *time.Time
 			updatedEm             *time.Time
-			dataSuspensao         *time.Time
+			dataReservaOriginal   *time.Time
 			shopName              *string
 			shopCidade            *string
 			shopRua               *string
@@ -115,7 +116,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			&horarioFinal,
 			&criadoEm,
 			&updatedEm,
-			&dataSuspensao,
+			&dataReservaOriginal,
 			&shopName,
 			&shopCidade,
 			&shopRua,
@@ -154,14 +155,14 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 		}
 
 		res := reservation.Reserva{
-			DateReservation: dataReserva,
-			StartTime:       horarioInicialReserva,
-			Duration:        duracao,
-			Status:          status,
-			EndTime:         horarioFinal,
-			CreatedAt:       criadoEm,
-			UpdatedAt:       updatedEm,
-			DataSuspensao:   dataSuspensao,
+			DateReservation:         dataReserva,
+			StartTime:               horarioInicialReserva,
+			Duration:                duracao,
+			Status:                  status,
+			EndTime:                 horarioFinal,
+			CreatedAt:               criadoEm,
+			UpdatedAt:               updatedEm,
+			DateReservationOriginal: dataReservaOriginal,
 		}
 
 		// Construa uma chave única para a combinação de Shop, Barber e Client
@@ -194,14 +195,11 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 }
 
 func (pg *PGReservation) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dataReservation *string) (bool, error) {
-	query := `
-	SELECT EXISTS (
+	query := `SELECT EXISTS (
 		SELECT 1 
-		FROM horario_excecao 
+		FROM horario_trabalho_excecao 
 		WHERE barbeiro_id = $1 
-		AND data_excecao = $2
-	)
-`
+		AND data_excecao = $2)`
 	var exists bool
 	err := pg.DB.QueryRowContext(ctx, query, barberID, dataReservation).Scan(&exists)
 	if err != nil {
@@ -213,4 +211,38 @@ func (pg *PGReservation) CheckExceptionForBarber(ctx *gin.Context, barberID *int
 	}
 	return exists, nil
 
+}
+
+func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *int64, updateReq *reservation.Reservation) error {
+	query := `
+        UPDATE reserva
+        SET 
+            barbeiro_id = COALESCE($2, barbeiro_id),
+            data_reserva_original = CASE 
+                WHEN data_reserva_original IS NULL THEN data_criacao 
+                ELSE data_reserva_original 
+            END,
+            data_reserva = COALESCE($3, data_reserva),
+            horario_inicial_reserva = COALESCE($4, horario_inicial_reserva),
+            status = CASE 
+                WHEN status = 'pendente' AND $3 IS NOT NULL THEN 'ativo'
+                WHEN status = 'pendente' AND $4 IS NOT NULL THEN 'ativo'
+                WHEN status = 'pendente' AND $2 IS NOT NULL THEN 'ativo'
+                ELSE COALESCE($5, status)
+            END,
+            data_atualizacao = now()
+        WHERE id = $1
+        RETURNING status
+    `
+	var newStatus string
+	err := pg.DB.QueryRowContext(ctx, query, reservationID,
+		updateReq.BarberID,
+		updateReq.DateReservation,
+		updateReq.StartTime,
+		updateReq.Status).Scan(&newStatus)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

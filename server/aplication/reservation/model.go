@@ -12,3 +12,12 @@ type CreateReservation struct {
 	Duration               *string `json:"duracao" converson:"duracao" binding:"required"`
 	Status                 *string `json:"status" converson:"status"`
 }
+
+type UpdateReservationReq struct {
+	ID                     *int64  `json:"id" converson:"id"`
+	BarberID               *int64  `json:"barbeiro_id" converson:"barbeiro_id"`
+	DateReservation        *string `json:"data_reserva" converson:"data_reserva"`
+	DateRservationOriginal *string `converson:"data_reserva_original"`
+	StartTime              *string `json:"horario_inicial" converson:"horario_inicial"`
+	Status                 *string `json:"status" converson:"status"`
+}

@@ -17,14 +17,13 @@ type Reservation struct {
 
 type Reserva struct {
 	DateReservation         *string    `conversor:"data_reserva" json:"data_reserva"`
-	DateReservationOriginal *string    `conversor:"data_reserva_original" json:"data_reserva_original"`
+	DateReservationOriginal *time.Time `conversor:"data_reserva_original" json:"data_reserva_original"`
 	StartTime               *string    `conversor:"horario_inicial" json:"horario_inicial"`
 	EndTime                 *string    `conversor:"horario_final" json:"horario_final"`
 	Duration                *string    `conversor:"duracao" json:"duracao"`
 	Status                  *string    `conversor:"status" json:"status"`
 	CreatedAt               *time.Time `conversor:"data_criacao" json:"data_criacao"`
 	UpdatedAt               *time.Time `conversor:"data_atualizacao" json:"data_atualizacao"`
-	DataSuspensao           *time.Time `conversor:"data_suspensao" json:"data_suspensao"`
 }
 
 type Barber struct {
