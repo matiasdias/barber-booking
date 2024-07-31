@@ -115,7 +115,7 @@ const docTemplate = `{
                 "tags": [
                     "barber"
                 ],
-                "summary": "List os barbeiros da barbearia",
+                "summary": "Lista os barbeiros da barbearia",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -123,6 +123,63 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/barber.ListBarbers"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barber/service/create": {
+            "post": {
+                "description": "Cria um novo serviço para a barbeiro e barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "service"
+                ],
+                "summary": "Criação dos serviços",
+                "parameters": [
+                    {
+                        "description": "Create service",
+                        "name": "barber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CreateService"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/service/list": {
+            "get": {
+                "description": "Lista todos os serviços ofertados pela barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "service"
+                ],
+                "summary": "Lista os serviços da barbearia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.ListServices"
                             }
                         }
                     }
@@ -212,6 +269,47 @@ const docTemplate = `{
                 },
                 "senha": {
                     "type": "string"
+                }
+            }
+        },
+        "service.CreateService": {
+            "type": "object",
+            "required": [
+                "nome",
+                "preco"
+            ],
+            "properties": {
+                "duracao": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
+                }
+            }
+        },
+        "service.ListServices": {
+            "type": "object",
+            "properties": {
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "duracao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
                 }
             }
         }

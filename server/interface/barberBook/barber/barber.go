@@ -12,7 +12,7 @@ import (
 // @Tags barber
 // @Accept  json
 // @Produce  json
-// @Param barber body barber.CreateBarber true "Create barber"
+// @Param barber body CreateBarber true "Create barber"
 // @Success 200 "Sem conteúdo"
 // @Router /barber/create [post]
 func Create(c *gin.Context) {
@@ -41,12 +41,12 @@ func Create(c *gin.Context) {
 }
 
 // ListBarber godoc
-// @Summary List os barbeiros da barbearia
+// @Summary Lista os barbeiros da barbearia
 // @Description Lista todos os barbeiros da barbearia
 // @Tags barber
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} barber.ListBarbers
+// @Success 200 {array} ListBarbers
 // @Router /barber/list [get]
 func List(c *gin.Context) {
 	var (

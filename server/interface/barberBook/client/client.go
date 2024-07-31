@@ -45,7 +45,7 @@ func Create(c *gin.Context) {
 // @Tags client
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} client.ListClients
+// @Success 200 {array} ListClients
 // @Router /barber/client/list [get]
 func List(c *gin.Context) {
 	var (
