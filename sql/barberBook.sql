@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS servico (
 id serial PRIMARY KEY,
 nome varchar(150) NOT NULL,
 preco numeric(10, 2),
-duracao interval DEFAULT '1h',
+duracao interval,
 data_criacao timestamp DEFAULT now() NOT NULL,
 data_atualizacao timestamp
 );
@@ -101,13 +101,14 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION valida_horario_reserva() RETURNS TRIGGER AS $$
 DECLARE
     dia_semana_reserva VARCHAR;
-    duracao interval;
+    duracao_servico interval;
 BEGIN
-    SELECT duracao INTO duracao FROM servico WHERE id = NEW.servico_id;
+    SELECT duracao INTO duracao_servico FROM servico WHERE id = NEW.servico_id;
 
     dia_semana_reserva := unaccent(day_of_week_to_text(EXTRACT(DOW FROM NEW.data_reserva::date)::integer));
     dia_semana_reserva := LOWER(REPLACE(TRIM(dia_semana_reserva), '-', ''));
 
+    NEW.horario_final := NEW.horario_inicial_reserva + duracao_servico;
     -- Verifica se o dia da semana da reserva corresponde ao horário de trabalho do barbeiro
     IF EXISTS (
         SELECT 1
@@ -115,14 +116,13 @@ BEGIN
         WHERE barbeiro_id = NEW.barbeiro_id
         AND unaccent(LOWER(REPLACE(dia_semana, '-', ''))) = dia_semana_reserva -- Compara o dia da semana da reserva com o dia da semana especificado no horário do barbeiro
         AND NEW.horario_inicial_reserva >= horario_inicio
-        AND (NEW.horario_inicial_reserva + NEW.duracao) <= horario_fim
+        AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_fim
         AND (
-            (NEW.horario_inicial_reserva >= horario_inicio AND (NEW.horario_inicial_reserva + NEW.duracao) <= horario_almoco_inicio)
+            (NEW.horario_inicial_reserva >= horario_inicio AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_almoco_inicio)
             OR
-            (NEW.horario_inicial_reserva >= horario_almoco_fim AND (NEW.horario_inicial_reserva + NEW.duracao) <= horario_fim)
+            (NEW.horario_inicial_reserva >= horario_almoco_fim AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_fim)
         )
     ) THEN
-        NEW.horario_final := NEW.horario_inicial_reserva + duracao;
         RETURN NEW; 
     ELSE
         RAISE EXCEPTION 'Reserva não permitida: Reserva fora do horário de trabalho do barbeiro para o dia da semana especificado';

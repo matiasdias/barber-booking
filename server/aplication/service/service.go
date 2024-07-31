@@ -3,7 +3,6 @@ package service
 import (
 	"api/server/database"
 	"api/server/domain/service"
-	"errors"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -20,14 +19,19 @@ func Create(ctx *gin.Context, services *CreateService) (err error) {
 	server := service.GetService(service.GetRepository(db))
 
 	dados := &service.Services{
-		ID:    services.ID,
-		Name:  services.Name,
-		Price: services.Price,
+		ID:       services.ID,
+		Name:     services.Name,
+		Price:    services.Price,
+		Duration: services.Duration,
 	}
-	if *dados.Name == "" || *dados.Price == 0.0 {
-		log.Println("Failed to create service: missing required fields")
-		return errors.New("missing required fields")
+
+	formatDuration, err := server.ValidadeService(dados)
+	if err != nil {
+		log.Printf("Failed to validate service: %v", err)
+		return err
 	}
+
+	dados.Duration = formatDuration.Duration
 
 	if err := server.Create(ctx, dados); err != nil {
 		log.Printf("Failed to create service: %v", err)

@@ -19,7 +19,7 @@ type PGReservation struct {
 func (pg *PGReservation) Create(ctx *gin.Context, reser *reservation.Reservation) error {
 
 	query := `INSERT INTO reserva 
-	( barbeiro_id, cliente_id, barbearia_id, data_reserva, horario_inicial_reserva, duracao ) 
+	( barbeiro_id, cliente_id, barbearia_id, servico_id, data_reserva, horario_inicial_reserva ) 
 	VALUES ( $1, $2, $3, $4, $5, $6 ) RETURNING id`
 
 	var reservationID int64
@@ -27,9 +27,9 @@ func (pg *PGReservation) Create(ctx *gin.Context, reser *reservation.Reservation
 		reser.BarberID,
 		reser.ClientID,
 		reser.BarberShopID,
+		reser.ServiceID,
 		reser.DateReservation,
 		reser.StartTime,
-		reser.Duration,
 	).Scan(&reservationID)
 	if err != nil {
 		log.Println("Erro ao inserir e consultar o ID da reserva:", err)
@@ -43,16 +43,16 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
 	query := `
         SELECT EXISTS (
             SELECT 1
-            FROM reserva
-            WHERE (barbeiro_id = $1 AND data_reserva = $2 AND ($3::time, $3::time + $4::interval) OVERLAPS (horario_inicial_reserva, horario_final))
-            OR (cliente_id = $5 AND data_reserva = $2 AND ($3::time, $3::time + $4::interval) OVERLAPS (horario_inicial_reserva, horario_final))
+            FROM reserva r
+            JOIN servico s ON r.servico_id = s.id
+            WHERE (r.barbeiro_id = $1 AND r.data_reserva = $2 AND ($3::time, $3::time + s.duracao) OVERLAPS (r.horario_inicial_reserva, r.horario_final))
+            OR (r.cliente_id = $4 AND r.data_reserva = $2 AND ($3::time, $3::time + s.duracao) OVERLAPS (r.horario_inicial_reserva, r.horario_final))
         )
     `
 	err := pg.DB.QueryRowContext(ctx, query,
 		reser.BarberID,
 		reser.DateReservation,
 		reser.StartTime,
-		reser.Duration,
 		reser.ClientID,
 	).Scan(&exists)
 	if err != nil {
@@ -68,13 +68,14 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
 func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.ReservationList, err error) {
 
 	query := `
-		SELECT r.data_reserva, r.horario_inicial_reserva, r.duracao, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
+		SELECT r.data_reserva, r.horario_inicial_reserva, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
 		r.data_reserva_original, ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
-		c.nome, c.email, c.contato
+		c.nome, c.email, c.contato, s.nome, s.preco, s.duracao
 		FROM reserva r
 		JOIN barbeiro b ON b.id = r.barbeiro_id
 		JOIN cliente c ON c.id = r.cliente_id
 		JOIN barbearia ba ON ba.id = r.barbearia_id
+		JOIN servico s ON s.id = r.servico_id
 		`
 
 	rows, err := pg.DB.QueryContext(ctx, query)
@@ -89,7 +90,6 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 		var (
 			dataReserva           *string
 			horarioInicialReserva *string
-			duracao               *string
 			status                *string
 			horarioFinal          *string
 			criadoEm              *time.Time
@@ -106,12 +106,14 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			clientName            *string
 			clientEmail           *string
 			clientContact         *string
+			serviceName           *string
+			servicePrice          *float64
+			serviceDuration       *string
 		)
 
 		err := rows.Scan(
 			&dataReserva,
 			&horarioInicialReserva,
-			&duracao,
 			&status,
 			&horarioFinal,
 			&criadoEm,
@@ -128,6 +130,9 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			&clientName,
 			&clientEmail,
 			&clientContact,
+			&serviceName,
+			&servicePrice,
+			&serviceDuration,
 		)
 		if err != nil {
 			log.Println("Erro ao escanear linha:", err)
@@ -153,11 +158,15 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			Email:   clientEmail,
 			Name:    clientName,
 		}
+		service := reservation.Service{
+			Name:     serviceName,
+			Price:    servicePrice,
+			Duration: serviceDuration,
+		}
 
 		res := reservation.Reserva{
 			DateReservation:         dataReserva,
 			StartTime:               horarioInicialReserva,
-			Duration:                duracao,
 			Status:                  status,
 			EndTime:                 horarioFinal,
 			CreatedAt:               criadoEm,
@@ -177,6 +186,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 				Shop:         shop,
 				Barber:       barber,
 				Client:       client,
+				Service:      service,
 				Reservations: []reservation.Reserva{res},
 			}
 		}

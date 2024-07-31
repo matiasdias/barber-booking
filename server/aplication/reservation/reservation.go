@@ -23,9 +23,9 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 		BarberID:        reser.BarberID,
 		ClientID:        reser.ClientID,
 		BarberShopID:    reser.BarberShopID,
+		ServiceID:       reser.ServiceID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
-		Duration:        reser.Duration,
 		Status:          reser.Status,
 	}
 
@@ -37,7 +37,6 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 
 	r.StartTime = formatHours.StartTime
 	r.DateReservation = formatHours.DateReservation
-	r.Duration = formatHours.Duration
 
 	if err = service.CheckConflictReservation(ctx, r); err != nil {
 		log.Printf("Failed to check conflict reservation: %v", err)

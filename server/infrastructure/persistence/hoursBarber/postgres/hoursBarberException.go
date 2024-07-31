@@ -57,7 +57,7 @@ func (pg *PGHoursBarberException) MarkReservationAsPending(ctx *gin.Context, bar
 
 	for _, reservaID := range reservaIDs {
 		updateQuery := `
-			update reserva set status = 'pendente', data_suspensao = now() where id = $1
+			update reserva set status = 'pendente' where id = $1
 		`
 		_, err := pg.DB.ExecContext(ctx, updateQuery, reservaID)
 		if err != nil {
