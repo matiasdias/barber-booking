@@ -6,12 +6,23 @@ import (
 	"fmt"
 	"net/http"
 
+	_ "api/docs"
+
 	"github.com/fvbock/endless"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
 
+// @title Barber Shop API
+// @version 1.0
+// @description This is a sample server Petstore server.
+
+// @host localhost:5000
+// @BasePath /
 func main() {
 	var (
 		err error
@@ -38,5 +49,8 @@ func externalRouter(logg *zap.Logger) http.Handler {
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found " + " : " + c.Request.URL.String()})
 	})
+
+	api := r.Group("api")
+	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
 }

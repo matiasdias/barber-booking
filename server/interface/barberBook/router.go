@@ -17,6 +17,6 @@ func Router(r *gin.RouterGroup) {
 	hoursBarber.RouterHoursBarber(r.Group("hoursBarber"))
 	hoursBarber.RouterHoursExecption(r.Group("hoursBarberException"))
 	client.RouterClient(r.Group("client"))
-	barber.RouterBarber(r.Group("barber"))
+	barber.RouterBarber(r.Group(""))
 	barberShop.RouterBarberShop(r.Group("barberShop"))
 }

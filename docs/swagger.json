@@ -1,0 +1,121 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server Petstore server.",
+        "title": "Barber Shop API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "paths": {
+        "/barber/client/create": {
+            "post": {
+                "description": "Cria um novo cliente",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client"
+                ],
+                "summary": "Create client",
+                "parameters": [
+                    {
+                        "description": "Create client",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.CreateClient"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/client/list": {
+            "get": {
+                "description": "Lista todos os clientes da barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client"
+                ],
+                "summary": "List os clientes da barbearia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/client.ListClients"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "client.CreateClient": {
+            "type": "object",
+            "required": [
+                "contato",
+                "email",
+                "nome",
+                "senha"
+            ],
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "senha": {
+                    "type": "string"
+                }
+            }
+        },
+        "client.ListClients": {
+            "type": "object",
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "senha": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

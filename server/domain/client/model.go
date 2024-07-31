@@ -3,7 +3,6 @@ package client
 import "time"
 
 type Client struct {
-	ID       *int64  `conversor:"id"`
 	Name     *string `conversor:"nome"`
 	Email    *string `conversor:"email"`
 	Contato  *string `conversor:"contato"`
