@@ -1,5 +1,28 @@
 basePath: /
 definitions:
+  barber.CreateBarber:
+    properties:
+      contato:
+        type: string
+      nome:
+        type: string
+    required:
+    - contato
+    - nome
+    type: object
+  barber.ListBarbers:
+    properties:
+      contato:
+        type: string
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+    type: object
   client.CreateClient:
     properties:
       contato:
@@ -77,4 +100,41 @@ paths:
       summary: List os clientes da barbearia
       tags:
       - client
+  /barber/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo barbeiro
+      parameters:
+      - description: Create barber
+        in: body
+        name: barber
+        required: true
+        schema:
+          $ref: '#/definitions/barber.CreateBarber'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação dos barbeiros
+      tags:
+      - barber
+  /barber/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os barbeiros da barbearia
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/barber.ListBarbers'
+            type: array
+      summary: List os barbeiros da barbearia
+      tags:
+      - barber
 swagger: "2.0"

@@ -65,9 +65,101 @@
                     }
                 }
             }
+        },
+        "/barber/create": {
+            "post": {
+                "description": "Cria um novo barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barber"
+                ],
+                "summary": "Criação dos barbeiros",
+                "parameters": [
+                    {
+                        "description": "Create barber",
+                        "name": "barber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/barber.CreateBarber"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/list": {
+            "get": {
+                "description": "Lista todos os barbeiros da barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barber"
+                ],
+                "summary": "List os barbeiros da barbearia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/barber.ListBarbers"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "barber.CreateBarber": {
+            "type": "object",
+            "required": [
+                "contato",
+                "nome"
+            ],
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "barber.ListBarbers": {
+            "type": "object",
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
         "client.CreateClient": {
             "type": "object",
             "required": [
