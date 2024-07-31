@@ -26,10 +26,10 @@ func (s *Service) Create(ctx *gin.Context, reser *Reservation) (err error) {
 		BarberID:        reser.BarberID,
 		ClientID:        reser.ClientID,
 		BarberShopID:    reser.BarberShopID,
+		ServiceID:       reser.ServiceID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
 		EndTime:         reser.EndTime,
-		Duration:        reser.Duration,
 		Status:          reser.Status,
 	}
 
@@ -46,9 +46,6 @@ func (s *Service) ValidateHoursRservation(reser *Reservation) (*FormartHours, er
 	if reser.BarberShopID == nil || *reser.BarberShopID == 0 {
 		return nil, errors.New("missing or invalid BarberShop")
 	}
-	if reser.Duration == nil || *reser.Duration == "" {
-		return nil, errors.New("missing or invalid Duration")
-	}
 
 	startTime, err := utils.ParseStringFromTime(reser.StartTime)
 	if err != nil {
@@ -60,19 +57,12 @@ func (s *Service) ValidateHoursRservation(reser *Reservation) (*FormartHours, er
 		return nil, err
 	}
 
-	duration, err := utils.ParseDuration(reser.Duration)
-	if err != nil {
-		return nil, err
-	}
-
 	startTimeStrFormatted := startTime.Format("15:04:05")
 	dateReservationStrFormatted := dateReservation.Format("2006-01-02")
-	durationStrFormatted := duration.String()
 
 	format := &FormartHours{
 		StartTime:       &startTimeStrFormatted,
 		DateReservation: &dateReservationStrFormatted,
-		Duration:        &durationStrFormatted,
 	}
 
 	return format, nil
@@ -87,7 +77,6 @@ func (s *Service) CheckConflictReservation(ctx *gin.Context, reser *Reservation)
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
 		EndTime:         reser.EndTime,
-		Duration:        reser.Duration,
 		Status:          reser.Status,
 	}
 
@@ -119,6 +108,10 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 		reser.Client.Email = res[i].Client.Email
 		reser.Client.Contact = res[i].Client.Contact
 
+		reser.Service.Name = res[i].Service.Name
+		reser.Service.Price = res[i].Service.Price
+		reser.Service.Duration = res[i].Service.Duration
+
 		// inicializa a lista de reservas
 		reser.Reservations = make([]Reserva, len(res[i].Reservations))
 		for j := range res[i].Reservations {
@@ -126,11 +119,10 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 			r.DateReservation = res[i].Reservations[j].DateReservation
 			r.StartTime = res[i].Reservations[j].StartTime
 			r.EndTime = res[i].Reservations[j].EndTime
-			r.Duration = res[i].Reservations[j].Duration
 			r.Status = res[i].Reservations[j].Status
 			r.CreatedAt = res[i].Reservations[j].CreatedAt
 			r.UpdatedAt = res[i].Reservations[j].UpdatedAt
-			r.DataSuspensao = res[i].Reservations[j].DataSuspensao
+			r.DateReservationOriginal = res[i].Reservations[j].DateReservationOriginal
 			reser.Reservations[j] = r
 		}
 		reservations[i] = reser
@@ -140,4 +132,15 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 
 func (s *Service) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dataReservation *string) (exise bool, err error) {
 	return s.repo.CheckExceptionForBarber(ctx, barberID, dataReservation)
+}
+
+func (s *Service) UpdateReservation(ctx *gin.Context, reservationID *int64, reser *Reservation) (err error) {
+	dados := &reservation.Reservation{
+		ID:              reservationID,
+		BarberID:        reser.BarberID,
+		DateReservation: reser.DateReservation,
+		StartTime:       reser.StartTime,
+		Status:          reser.Status,
+	}
+	return s.repo.UpdateReservation(ctx, reservationID, dados)
 }

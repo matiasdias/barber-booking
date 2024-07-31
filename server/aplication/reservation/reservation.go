@@ -3,6 +3,7 @@ package reservation
 import (
 	"api/server/database"
 	"api/server/domain/reservation"
+	"api/server/utils"
 	"fmt"
 	"log"
 
@@ -22,9 +23,9 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 		BarberID:        reser.BarberID,
 		ClientID:        reser.ClientID,
 		BarberShopID:    reser.BarberShopID,
+		ServiceID:       reser.ServiceID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
-		Duration:        reser.Duration,
 		Status:          reser.Status,
 	}
 
@@ -36,7 +37,6 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 
 	r.StartTime = formatHours.StartTime
 	r.DateReservation = formatHours.DateReservation
-	r.Duration = formatHours.Duration
 
 	if err = service.CheckConflictReservation(ctx, r); err != nil {
 		log.Printf("Failed to check conflict reservation: %v", err)
@@ -77,4 +77,50 @@ func List(ctx *gin.Context) (reservations []reservation.ReservationList, err err
 		return
 	}
 	return
+}
+
+func Update(ctx *gin.Context, reservationID *int64, reser *UpdateReservationReq) error {
+	db, err := database.Connection()
+	if err != nil {
+		log.Printf("Failed to connect to database: %v", err)
+		return err
+	}
+	defer db.Close()
+	service := reservation.GetService(reservation.GetRepository(db))
+	dados := &reservation.Reservation{
+		ID:              reservationID,
+		BarberID:        reser.BarberID,
+		DateReservation: reser.DateReservation,
+		StartTime:       reser.StartTime,
+		Status:          reser.Status,
+	}
+
+	dateReservation, err := utils.ParseStringFromDate(reser.DateReservation)
+	if err != nil {
+		return err
+	}
+	dateReservationStrFormatted := dateReservation.Format("2006-01-02")
+	dados.DateReservation = &dateReservationStrFormatted
+
+	if err = service.CheckConflictReservation(ctx, dados); err != nil {
+		log.Printf("Failed to check conflict reservation: %v", err)
+		return err
+	}
+
+	exists, err := service.CheckExceptionForBarber(ctx, dados.BarberID, dados.DateReservation)
+	if err != nil {
+		log.Printf("Failed to check exception for barber: %v", err)
+		return err
+	}
+	if exists {
+		err = fmt.Errorf("A data %s está marcada como exceção de trabalho para este barbeiro.", *dados.DateReservation)
+		log.Println(err)
+		return err
+	}
+
+	if err = service.UpdateReservation(ctx, reservationID, dados); err != nil {
+		log.Printf("Failed to update reservation: %v", err)
+		return err
+	}
+	return nil
 }

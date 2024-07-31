@@ -2,6 +2,8 @@ package reservation
 
 import (
 	"api/server/aplication/reservation"
+	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,4 +43,35 @@ func List(c *gin.Context) {
 		})
 	}
 	c.JSON(200, reservations)
+}
+
+func Update(c *gin.Context) {
+	var (
+		err error
+		req reservation.UpdateReservationReq
+	)
+	if err = c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid reservation ID",
+		})
+		return
+	}
+
+	// Call the application layer function
+	if err = reservation.Update(c.Copy(), &id, &req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Reservation updated successfully",
+	})
 }
