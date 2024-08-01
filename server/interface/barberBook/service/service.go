@@ -12,7 +12,7 @@ import (
 // @Tags service
 // @Accept  json
 // @Produce  json
-// @Param barber body CreateService true "Create service"
+// @Param service body CreateService true "Create service"
 // @Success 200 "Sem conteúdo"
 // @Router /barber/service/create [post]
 func Create(c *gin.Context) {

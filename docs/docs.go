@@ -15,6 +15,63 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/barber/barberShop/create": {
+            "post": {
+                "description": "Cria um estavelecimento",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barberShop"
+                ],
+                "summary": "Criação das barbearias",
+                "parameters": [
+                    {
+                        "description": "Create barber shop",
+                        "name": "barberShop",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/barberShop.CreateBarberShop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/barberShop/list": {
+            "get": {
+                "description": "Lista todas as barbearias disponíveis para serem feiras as reservas",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barberShop"
+                ],
+                "summary": "Lista todas as barbearias",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/barberShop.ListBarbserShop"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/barber/client/create": {
             "post": {
                 "description": "Cria um novo cliente",
@@ -145,7 +202,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Create service",
-                        "name": "barber",
+                        "name": "service",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -219,6 +276,69 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "barberShop.CreateBarberShop": {
+            "type": "object",
+            "required": [
+                "cidade",
+                "contato",
+                "nome",
+                "numero_residencia",
+                "ponto_referencia",
+                "rua"
+            ],
+            "properties": {
+                "cidade": {
+                    "type": "string"
+                },
+                "contato": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "numero_residencia": {
+                    "type": "integer"
+                },
+                "ponto_referencia": {
+                    "type": "string"
+                },
+                "rua": {
+                    "type": "string"
+                }
+            }
+        },
+        "barberShop.ListBarbserShop": {
+            "type": "object",
+            "properties": {
+                "cidade": {
+                    "type": "string"
+                },
+                "contato": {
+                    "type": "string"
+                },
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "numero_residencia": {
+                    "type": "integer"
+                },
+                "ponto_referencia": {
+                    "type": "string"
+                },
+                "rua": {
                     "type": "string"
                 }
             }
