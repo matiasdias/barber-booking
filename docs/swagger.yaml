@@ -1,5 +1,38 @@
 basePath: /
 definitions:
+  api_server_aplication_hoursBarber.Barber:
+    properties:
+      contato:
+        type: string
+      nome:
+        type: string
+    type: object
+  api_server_aplication_hoursBarber.HoursBarbers:
+    properties:
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      dia_semana:
+        type: string
+      horario_almoco_final:
+        type: string
+      horario_almoco_inicial:
+        type: string
+      horario_final:
+        type: string
+      horario_inicial:
+        type: string
+    type: object
+  api_server_aplication_hoursBarber.ListHoursBarber:
+    properties:
+      barbeiro:
+        $ref: '#/definitions/api_server_aplication_hoursBarber.Barber'
+      horario_trabalho:
+        items:
+          $ref: '#/definitions/api_server_aplication_hoursBarber.HoursBarbers'
+        type: array
+    type: object
   barber.CreateBarber:
     properties:
       contato:
@@ -99,6 +132,40 @@ definitions:
       senha:
         type: string
     type: object
+  hoursBarber.CreateException:
+    properties:
+      barbeiro_id:
+        type: integer
+      data_execeção:
+        type: string
+      motivo:
+        type: string
+    required:
+    - barbeiro_id
+    - data_execeção
+    type: object
+  hoursBarber.CreateHoursBarber:
+    properties:
+      barbeiro_id:
+        type: integer
+      dia_semana:
+        type: string
+      horario_almoco_final:
+        type: string
+      horario_almoco_inicial:
+        type: string
+      horario_final:
+        type: string
+      horario_inicial:
+        type: string
+    required:
+    - barbeiro_id
+    - dia_semana
+    - horario_almoco_final
+    - horario_almoco_inicial
+    - horario_final
+    - horario_inicial
+    type: object
   service.CreateService:
     properties:
       duracao:
@@ -157,7 +224,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Lista todas as barbearias disponíveis para serem feiras as reservas
+      description: Lista todas as barbearias disponíveis para serem feitas as reservas
       produces:
       - application/json
       responses:
@@ -227,6 +294,63 @@ paths:
       summary: Criação dos barbeiros
       tags:
       - barber
+  /barber/hoursBarber/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria os horários de trabalho para o barbeiro
+      parameters:
+      - description: Create hours barber
+        in: body
+        name: hoursBarberException
+        required: true
+        schema:
+          $ref: '#/definitions/hoursBarber.CreateHoursBarber'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação dos horários de trabalho para o barbeiro
+      tags:
+      - hoursBarber
+  /barber/hoursBarber/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os horários de trabalho para o barbeiro
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api_server_aplication_hoursBarber.ListHoursBarber'
+            type: array
+      summary: Lista todas os horarios de trabalho
+      tags:
+      - hoursBarber
+  /barber/hoursBarberException/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma exceção de hora de trabalho para o barbeiro
+      parameters:
+      - description: Create hours barber exception
+        in: body
+        name: hoursBarberException
+        required: true
+        schema:
+          $ref: '#/definitions/hoursBarber.CreateException'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação de exceções de hora de trabalho para o barbearia
+      tags:
+      - hoursBarber
   /barber/list:
     get:
       consumes:

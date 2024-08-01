@@ -6,6 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateException godoc
+// @Summary Criação de exceções de hora de trabalho para o barbearia
+// @Description Cria uma exceção de hora de trabalho para o barbeiro
+// @Tags hoursBarber
+// @Accept  json
+// @Produce  json
+// @Param hoursBarberException body CreateException true "Create hours barber exception"
+// @Success 200 "Sem conteúdo"
+// @Router /barber/hoursBarberException/create [post]
 func CreateException(c *gin.Context) {
 	var (
 		req hoursBarber.CreateException

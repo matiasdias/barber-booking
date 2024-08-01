@@ -3,7 +3,6 @@ package hoursBarber
 import "time"
 
 type HoursBarber struct {
-	ID             *int64     `conversor:"id" `
 	BarberID       *int64     `conversor:"barbeiro_id"`
 	DayOfWeek      *string    `conversor:"dia_semana"`
 	StartTime      *string    `conversor:"horario_inicial"`
@@ -34,7 +33,6 @@ type ListHoursBarber struct {
 }
 
 type HoursBarberException struct {
-	ID            *int64     `conversor:"id"`
 	BarberID      *int64     `conversor:"barbeiro_id"`
 	DateException *string    `conversor:"data_execeção"`
 	Reason        *string    `conversor:"motivo"`

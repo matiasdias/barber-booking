@@ -20,7 +20,6 @@ func Create(ctx *gin.Context, hours *CreateHoursBarber) (err error) {
 	service := hoursBarber.GetService(hoursBarber.GetRepository(db))
 
 	dados := &hoursBarber.HoursBarber{
-		ID:             hours.ID,
 		BarberID:       hours.BarberID,
 		DayOfWeek:      hours.DayOfWeek,
 		StartTime:      hours.StartTime,
@@ -56,7 +55,7 @@ func Create(ctx *gin.Context, hours *CreateHoursBarber) (err error) {
 	return
 }
 
-func ListHourBarber(ctx *gin.Context) (hoursBarbers []hoursBarber.ListHoursBarber, err error) {
+func ListHourBarber(ctx *gin.Context) (hoursBarbers []*ListHoursBarber, err error) {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
@@ -64,11 +63,33 @@ func ListHourBarber(ctx *gin.Context) (hoursBarbers []hoursBarber.ListHoursBarbe
 	}
 	defer db.Close()
 
-	service := hoursBarber.GetService(hoursBarber.GetRepository(db))
-	hoursBarbers, err = service.List(ctx)
-	if err != nil {
+	var (
+		service = hoursBarber.GetService(hoursBarber.GetRepository(db))
+		dados   []hoursBarber.ListHoursBarber
+	)
+
+	if dados, err = service.List(ctx); err != nil {
 		log.Printf("Failed to list hours barbers: %v", err)
 		return nil, err
+	}
+
+	for i := range dados {
+		var b ListHoursBarber
+		b.Barber.Name = dados[i].Barber.Name
+		b.Barber.Contato = dados[i].Barber.Contato
+		b.HourBarbers = make([]HoursBarbers, len(dados[i].HourBarbers))
+		for j := range dados[i].HourBarbers {
+			var h HoursBarbers
+			h.DayOfWeek = dados[i].HourBarbers[j].DayOfWeek
+			h.StartTime = dados[i].HourBarbers[j].StartTime
+			h.LunchStartTime = dados[i].HourBarbers[j].LunchStartTime
+			h.LunchEndTime = dados[i].HourBarbers[j].LunchEndTime
+			h.EndTime = dados[i].HourBarbers[j].EndTime
+			h.CreatedAt = dados[i].HourBarbers[j].CreatedAt
+			h.UpdatedAt = dados[i].HourBarbers[j].UpdatedAt
+			b.HourBarbers[j] = h
+		}
+		hoursBarbers = append(hoursBarbers, &b)
 	}
 	return
 }

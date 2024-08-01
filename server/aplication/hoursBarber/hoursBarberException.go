@@ -20,7 +20,6 @@ func CreateHoursBarberExecption(ctx *gin.Context, hoursBarberExecepion *CreateEx
 	service := hoursBarber.GetService(hoursBarber.GetRepository(db))
 
 	dados := &hoursBarber.HoursBarberException{
-		ID:            hoursBarberExecepion.ID,
 		BarberID:      hoursBarberExecepion.BarberID,
 		DateException: hoursBarberExecepion.DateException,
 		Reason:        hoursBarberExecepion.Reason,

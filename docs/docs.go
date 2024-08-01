@@ -48,7 +48,7 @@ const docTemplate = `{
         },
         "/barber/barberShop/list": {
             "get": {
-                "description": "Lista todas as barbearias disponíveis para serem feiras as reservas",
+                "description": "Lista todas as barbearias disponíveis para serem feitas as reservas",
                 "consumes": [
                     "application/json"
                 ],
@@ -160,6 +160,94 @@ const docTemplate = `{
                 }
             }
         },
+        "/barber/hoursBarber/create": {
+            "post": {
+                "description": "Cria os horários de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Criação dos horários de trabalho para o barbeiro",
+                "parameters": [
+                    {
+                        "description": "Create hours barber",
+                        "name": "hoursBarberException",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hoursBarber.CreateHoursBarber"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/hoursBarber/list": {
+            "get": {
+                "description": "Lista todos os horários de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Lista todas os horarios de trabalho",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api_server_aplication_hoursBarber.ListHoursBarber"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barber/hoursBarberException/create": {
+            "post": {
+                "description": "Cria uma exceção de hora de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Criação de exceções de hora de trabalho para o barbearia",
+                "parameters": [
+                    {
+                        "description": "Create hours barber exception",
+                        "name": "hoursBarberException",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hoursBarber.CreateException"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
         "/barber/list": {
             "get": {
                 "description": "Lista todos os barbeiros da barbearia",
@@ -245,6 +333,57 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "api_server_aplication_hoursBarber.Barber": {
+            "type": "object",
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_server_aplication_hoursBarber.HoursBarbers": {
+            "type": "object",
+            "properties": {
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "dia_semana": {
+                    "type": "string"
+                },
+                "horario_almoco_final": {
+                    "type": "string"
+                },
+                "horario_almoco_inicial": {
+                    "type": "string"
+                },
+                "horario_final": {
+                    "type": "string"
+                },
+                "horario_inicial": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_server_aplication_hoursBarber.ListHoursBarber": {
+            "type": "object",
+            "properties": {
+                "barbeiro": {
+                    "$ref": "#/definitions/api_server_aplication_hoursBarber.Barber"
+                },
+                "horario_trabalho": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api_server_aplication_hoursBarber.HoursBarbers"
+                    }
+                }
+            }
+        },
         "barber.CreateBarber": {
             "type": "object",
             "required": [
@@ -388,6 +527,55 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "senha": {
+                    "type": "string"
+                }
+            }
+        },
+        "hoursBarber.CreateException": {
+            "type": "object",
+            "required": [
+                "barbeiro_id",
+                "data_execeção"
+            ],
+            "properties": {
+                "barbeiro_id": {
+                    "type": "integer"
+                },
+                "data_execeção": {
+                    "type": "string"
+                },
+                "motivo": {
+                    "type": "string"
+                }
+            }
+        },
+        "hoursBarber.CreateHoursBarber": {
+            "type": "object",
+            "required": [
+                "barbeiro_id",
+                "dia_semana",
+                "horario_almoco_final",
+                "horario_almoco_inicial",
+                "horario_final",
+                "horario_inicial"
+            ],
+            "properties": {
+                "barbeiro_id": {
+                    "type": "integer"
+                },
+                "dia_semana": {
+                    "type": "string"
+                },
+                "horario_almoco_final": {
+                    "type": "string"
+                },
+                "horario_almoco_inicial": {
+                    "type": "string"
+                },
+                "horario_final": {
+                    "type": "string"
+                },
+                "horario_inicial": {
                     "type": "string"
                 }
             }
