@@ -26,7 +26,6 @@ func Create(ctx *gin.Context, reser *CreateReservation) error {
 		ServiceID:       reser.ServiceID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
-		Status:          reser.Status,
 	}
 
 	formatHours, err := service.ValidateHoursRservation(r)
@@ -88,11 +87,11 @@ func Update(ctx *gin.Context, reservationID *int64, reser *UpdateReservationReq)
 	defer db.Close()
 	service := reservation.GetService(reservation.GetRepository(db))
 	dados := &reservation.Reservation{
-		ID:              reservationID,
 		BarberID:        reser.BarberID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
 		Status:          reser.Status,
+		ServiceID:       reser.ServiceID,
 	}
 
 	dateReservation, err := utils.ParseStringFromDate(reser.DateReservation)

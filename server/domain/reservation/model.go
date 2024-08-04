@@ -3,16 +3,14 @@ package reservation
 import "time"
 
 type Reservation struct {
-	ID                      *int64  `converson:"id"`
-	BarberID                *int64  `converson:"barbeiro_id"`
-	ClientID                *int64  `converson:"cliente_id"`
-	BarberShopID            *int64  `converson:"barbearia_id"`
-	ServiceID               *int64  `converson:"servico_id"`
-	DateReservation         *string `converson:"data_reserva"`
-	DateReservationOriginal *string `converson:"data_reserva_original"`
-	StartTime               *string `converson:"horario_inicial"`
-	EndTime                 *string `converson:"horario_final"`
-	Status                  *string `converson:"status"`
+	BarberID        *int64  `converson:"barbeiro_id"`
+	ClientID        *int64  `converson:"cliente_id"`
+	BarberShopID    *int64  `converson:"barbearia_id"`
+	ServiceID       *int64  `converson:"servico_id"`
+	DateReservation *string `converson:"data_reserva"`
+	StartTime       *string `converson:"horario_inicial"`
+	EndTime         *string `converson:"horario_final"`
+	Status          *string `converson:"status"`
 }
 
 type FormartHours struct {

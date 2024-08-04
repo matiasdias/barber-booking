@@ -274,6 +274,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/barber/reservation/create": {
+            "post": {
+                "description": "Cria uma nova reserva para um barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reservation"
+                ],
+                "summary": "Criação das reservas",
+                "parameters": [
+                    {
+                        "description": "Create reservation",
+                        "name": "barber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reservation.CreateReservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
         "/barber/service/create": {
             "post": {
                 "description": "Cria um novo serviço para a barbeiro e barbearia",
@@ -577,6 +608,37 @@ const docTemplate = `{
                 },
                 "horario_inicial": {
                     "type": "string"
+                }
+            }
+        },
+        "reservation.CreateReservation": {
+            "type": "object",
+            "required": [
+                "barbearia_id",
+                "barbeiro_id",
+                "cliente_id",
+                "data_reserva",
+                "horario_inicial",
+                "servico_id"
+            ],
+            "properties": {
+                "barbearia_id": {
+                    "type": "integer"
+                },
+                "barbeiro_id": {
+                    "type": "integer"
+                },
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "data_reserva": {
+                    "type": "string"
+                },
+                "horario_inicial": {
+                    "type": "string"
+                },
+                "servico_id": {
+                    "type": "integer"
                 }
             }
         },

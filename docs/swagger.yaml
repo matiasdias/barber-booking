@@ -166,6 +166,28 @@ definitions:
     - horario_final
     - horario_inicial
     type: object
+  reservation.CreateReservation:
+    properties:
+      barbearia_id:
+        type: integer
+      barbeiro_id:
+        type: integer
+      cliente_id:
+        type: integer
+      data_reserva:
+        type: string
+      horario_inicial:
+        type: string
+      servico_id:
+        type: integer
+    required:
+    - barbearia_id
+    - barbeiro_id
+    - cliente_id
+    - data_reserva
+    - horario_inicial
+    - servico_id
+    type: object
   service.CreateService:
     properties:
       duracao:
@@ -368,6 +390,26 @@ paths:
       summary: Lista os barbeiros da barbearia
       tags:
       - barber
+  /barber/reservation/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova reserva para um barbeiro
+      parameters:
+      - description: Create reservation
+        in: body
+        name: barber
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.CreateReservation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação das reservas
+      tags:
+      - reservation
   /barber/service/create:
     post:
       consumes:

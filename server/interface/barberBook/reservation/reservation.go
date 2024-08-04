@@ -8,6 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateReservation godoc
+// @Summary Criação das reservas
+// @Description Cria uma nova reserva para um barbeiro
+// @Tags reservation
+// @Accept  json
+// @Produce  json
+// @Param barber body CreateReservation true "Create reservation"
+// @Success 200 "Sem conteúdo"
+// @Router /barber/reservation/create [post]
 func Create(c *gin.Context) {
 	var (
 		err error

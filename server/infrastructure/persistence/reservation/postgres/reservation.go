@@ -233,6 +233,7 @@ func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *i
                 ELSE data_reserva_original 
             END,
             data_reserva = COALESCE($3, data_reserva),
+			servico_id = COALESCE($6, servico_id),
             horario_inicial_reserva = COALESCE($4, horario_inicial_reserva),
             status = CASE 
                 WHEN status = 'pendente' AND $3 IS NOT NULL THEN 'ativo'
@@ -249,7 +250,8 @@ func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *i
 		updateReq.BarberID,
 		updateReq.DateReservation,
 		updateReq.StartTime,
-		updateReq.Status).Scan(&newStatus)
+		updateReq.Status,
+		updateReq.ServiceID).Scan(&newStatus)
 	if err != nil {
 		return err
 	}
