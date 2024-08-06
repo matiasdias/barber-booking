@@ -20,7 +20,7 @@ type FormartHours struct {
 
 type Reserva struct {
 	DateReservation         *string    `conversor:"data_reserva" json:"data_reserva"`
-	DateReservationOriginal *time.Time `conversor:"data_reserva_original" json:"data_reserva_original"`
+	DateReservationOriginal *string    `conversor:"data_reserva_original" json:"data_reserva_original"`
 	StartTime               *string    `conversor:"horario_inicial" json:"horario_inicial"`
 	EndTime                 *string    `conversor:"horario_final" json:"horario_final"`
 	Status                  *string    `conversor:"status" json:"status"`
