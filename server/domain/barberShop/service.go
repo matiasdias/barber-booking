@@ -23,7 +23,6 @@ func GetRepository(db *sql.DB) IBarberShop {
 
 func (s *Service) Create(ctx *gin.Context, b *BarberShop) (err error) {
 	dados := &barberShop.BarberShop{
-		ID:               b.ID,
 		Name:             b.Name,
 		Cidade:           b.Cidade,
 		Rua:              b.Rua,

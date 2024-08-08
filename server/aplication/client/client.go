@@ -21,7 +21,6 @@ func Create(ctx *gin.Context, cliente *CreateClient) (err error) {
 	service := client.GetService(client.GetRepository(db))
 
 	dados := &client.Client{
-		ID:       cliente.ID,
 		Name:     cliente.Name,
 		Email:    cliente.Email,
 		Contato:  cliente.Contato,
@@ -46,19 +45,34 @@ func Create(ctx *gin.Context, cliente *CreateClient) (err error) {
 	return nil
 }
 
-func LisClient(ctx *gin.Context) (clients []client.Clients, err error) {
+func LisClient(ctx *gin.Context) (clients []*ListClients, err error) {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
 		return nil, err
 	}
 	defer db.Close()
+	var (
+		service = client.GetService(client.GetRepository(db))
+		dados   []client.Clients
+	)
 
-	service := client.GetService(client.GetRepository(db))
-	clients, err = service.List(ctx)
-	if err != nil {
+	if dados, err = service.List(ctx); err != nil {
 		log.Printf("Failed to list clients: %v", err)
 		return nil, err
+	}
+
+	for i := range dados {
+		cli := &ListClients{
+			ID:       dados[i].ID,
+			Name:     dados[i].Name,
+			Email:    dados[i].Email,
+			Contato:  dados[i].Contato,
+			PassWord: dados[i].PassWord,
+			CriadoEm: dados[i].CriadoEm,
+			UpdateEm: dados[i].UpdateEm,
+		}
+		clients = append(clients, cli)
 	}
 	return
 }

@@ -108,7 +108,6 @@ BEGIN
     dia_semana_reserva := unaccent(day_of_week_to_text(EXTRACT(DOW FROM NEW.data_reserva::date)::integer));
     dia_semana_reserva := LOWER(REPLACE(TRIM(dia_semana_reserva), '-', ''));
 
-    NEW.horario_final := NEW.horario_inicial_reserva + duracao_servico;
     -- Verifica se o dia da semana da reserva corresponde ao horário de trabalho do barbeiro
     IF EXISTS (
         SELECT 1
@@ -123,6 +122,8 @@ BEGIN
             (NEW.horario_inicial_reserva >= horario_almoco_fim AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_fim)
         )
     ) THEN
+        NEW.horario_final := NEW.horario_inicial_reserva + duracao_servico;
+
         RETURN NEW; 
     ELSE
         RAISE EXCEPTION 'Reserva não permitida: Reserva fora do horário de trabalho do barbeiro para o dia da semana especificado';
@@ -137,7 +138,7 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS trig_valida_horario_reserva ON reserva;
 
 CREATE TRIGGER trig_valida_horario_reserva
-BEFORE INSERT ON reserva
+BEFORE INSERT OR UPDATE ON reserva
 FOR EACH ROW EXECUTE FUNCTION valida_horario_reserva();
 
 CREATE EXTENSION IF NOT EXISTS unaccent;

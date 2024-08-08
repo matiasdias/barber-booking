@@ -3,7 +3,6 @@ package barberShop
 import "time"
 
 type BarberShop struct {
-	ID               *int64  `conversor:"id"`
 	Name             *string `conversor:"nome" `
 	Cidade           *string `conversor:"cidade"`
 	Rua              *string `conversor:"rua" json:"rua"`

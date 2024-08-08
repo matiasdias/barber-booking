@@ -25,7 +25,6 @@ func GetRepository(db *sql.DB) IHoursBarber {
 
 func (s *Service) Create(ctx *gin.Context, hours *HoursBarber) (err error) {
 	dados := &hoursBarber.HoursBarber{
-		ID:             hours.ID,
 		BarberID:       hours.BarberID,
 		DayOfWeek:      hours.DayOfWeek,
 		StartTime:      hours.StartTime,
@@ -98,7 +97,6 @@ func (s *Service) ValidateHoursBarber(hours *HoursBarber) (format *FormartHours,
 
 func (s *Service) CheckConflitHoursBarber(ctx *gin.Context, hours *HoursBarber) (conflit bool, err error) {
 	dados := &hoursBarber.HoursBarber{
-		ID:             hours.ID,
 		BarberID:       hours.BarberID,
 		DayOfWeek:      hours.DayOfWeek,
 		StartTime:      hours.StartTime,

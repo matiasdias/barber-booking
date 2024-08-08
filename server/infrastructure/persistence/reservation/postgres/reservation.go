@@ -94,7 +94,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			horarioFinal          *string
 			criadoEm              *time.Time
 			updatedEm             *time.Time
-			dataReservaOriginal   *time.Time
+			dataReservaOriginal   *string
 			shopName              *string
 			shopCidade            *string
 			shopRua               *string
@@ -230,9 +230,11 @@ func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *i
             barbeiro_id = COALESCE($2, barbeiro_id),
             data_reserva_original = CASE 
                 WHEN data_reserva_original IS NULL THEN data_criacao 
-                ELSE data_reserva_original 
+       			WHEN data_reserva_original = data_criacao THEN COALESCE($3, data_reserva) 
+       			ELSE data_reserva_original 
             END,
             data_reserva = COALESCE($3, data_reserva),
+			servico_id = COALESCE($6, servico_id),
             horario_inicial_reserva = COALESCE($4, horario_inicial_reserva),
             status = CASE 
                 WHEN status = 'pendente' AND $3 IS NOT NULL THEN 'ativo'
@@ -249,7 +251,8 @@ func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *i
 		updateReq.BarberID,
 		updateReq.DateReservation,
 		updateReq.StartTime,
-		updateReq.Status).Scan(&newStatus)
+		updateReq.Status,
+		updateReq.ServiceID).Scan(&newStatus)
 	if err != nil {
 		return err
 	}

@@ -3,7 +3,6 @@ package service
 import "time"
 
 type Services struct {
-	ID       *int64   `conversor:"id"`
 	Name     *string  `conversor:"nome"`
 	Price    *float64 `conversor:"preco"`
 	Duration *string  `conversor:"duracao"`

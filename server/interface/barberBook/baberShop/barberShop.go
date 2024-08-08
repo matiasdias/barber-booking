@@ -6,6 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateBarberShop godoc
+// @Summary Criação das barbearias
+// @Description Cria um estavelecimento
+// @Tags barberShop
+// @Accept  json
+// @Produce  json
+// @Param barberShop body CreateBarberShop true "Create barber shop"
+// @Success 200 "Sem conteúdo"
+// @Router /barber/barberShop/create [post]
 func Create(c *gin.Context) {
 	var (
 		req barberShop.CreateBarberShop
@@ -28,6 +37,14 @@ func Create(c *gin.Context) {
 	})
 }
 
+// ListBarbserShop godoc
+// @Summary Lista todas as barbearias
+// @Description Lista todas as barbearias disponíveis para serem feitas as reservas
+// @Tags barberShop
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} ListBarbserShop
+// @Router /barber/barberShop/list [get]
 func List(c *gin.Context) {
 	var (
 		err error

@@ -29,6 +29,7 @@ func ParseStringFromDate(dateStr *string) (*time.Time, error) {
 	return &parsedDate, nil
 }
 
+// ParseDuration converte string para time.Duration
 func ParseDuration(durationStr *string) (time.Duration, error) {
 	duration, err := time.ParseDuration(*durationStr)
 	if err != nil {

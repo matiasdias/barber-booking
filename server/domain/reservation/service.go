@@ -29,8 +29,6 @@ func (s *Service) Create(ctx *gin.Context, reser *Reservation) (err error) {
 		ServiceID:       reser.ServiceID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
-		EndTime:         reser.EndTime,
-		Status:          reser.Status,
 	}
 
 	return s.repo.Create(ctx, dados)
@@ -136,11 +134,11 @@ func (s *Service) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dat
 
 func (s *Service) UpdateReservation(ctx *gin.Context, reservationID *int64, reser *Reservation) (err error) {
 	dados := &reservation.Reservation{
-		ID:              reservationID,
 		BarberID:        reser.BarberID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
 		Status:          reser.Status,
+		ServiceID:       reser.ServiceID,
 	}
 	return s.repo.UpdateReservation(ctx, reservationID, dados)
 }

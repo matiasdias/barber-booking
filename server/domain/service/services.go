@@ -25,7 +25,6 @@ func GetRepository(db *sql.DB) IService {
 
 func (s *Service) Create(ctx *gin.Context, services *Services) (err error) {
 	dados := &service.Services{
-		ID:       services.ID,
 		Name:     services.Name,
 		Price:    services.Price,
 		Duration: services.Duration,

@@ -21,7 +21,6 @@ func BarberCreate(ctx *gin.Context, barbers *CreateBarber) (err error) {
 	service := barber.GetService(barber.GetRepository(db))
 
 	dados := &barber.Barber{
-		ID:      barbers.ID,
 		Name:    barbers.Name,
 		Contato: barbers.Contato,
 	}
@@ -44,7 +43,7 @@ func BarberCreate(ctx *gin.Context, barbers *CreateBarber) (err error) {
 	return nil
 }
 
-func ListBarber(ctx *gin.Context) (barbers []barber.Barbers, err error) {
+func ListBarber(ctx *gin.Context) (barbers []*ListBarbers, err error) {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
@@ -52,11 +51,26 @@ func ListBarber(ctx *gin.Context) (barbers []barber.Barbers, err error) {
 	}
 	defer db.Close()
 
-	service := barber.GetService(barber.GetRepository(db))
-	barbers, err = service.List(ctx)
-	if err != nil {
+	var (
+		service = barber.GetService(barber.GetRepository(db))
+		dados   []barber.Barbers
+	)
+
+	if dados, err = service.List(ctx); err != nil {
 		log.Printf("Failed to list barbers: %v", err)
 		return nil, err
 	}
+
+	for i := range dados {
+		barber := &ListBarbers{
+			ID:       dados[i].ID,
+			Name:     dados[i].Name,
+			Contato:  dados[i].Contato,
+			CriadoEm: dados[i].CriadoEm,
+			UpdateEm: dados[i].UpdateEm,
+		}
+		barbers = append(barbers, barber)
+	}
+
 	return
 }
