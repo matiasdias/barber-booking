@@ -62,6 +62,16 @@ func List(c *gin.Context) {
 	c.JSON(200, reservations)
 }
 
+// UpdateReservationReq godoc
+// @Summary Atualização das reservas
+// @Description Atualiza uma nova reserva para um barbeiro
+// @Tags reservation
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Reservation ID"
+// @Param reservation body reservation.UpdateReservationReq true "Update reservation"
+// @Success 200 "Sem conteúdo"
+// @Router /barber/reservation/update/{id} [put]
 func Update(c *gin.Context) {
 	var (
 		err error
@@ -81,7 +91,6 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	// Call the application layer function
 	if err = reservation.Update(c.Copy(), &id, &req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
