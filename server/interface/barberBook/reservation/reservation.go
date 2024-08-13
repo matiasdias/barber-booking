@@ -91,6 +91,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
+	// Call the application layer function
 	if err = reservation.Update(c.Copy(), &id, &req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

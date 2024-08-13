@@ -299,44 +299,6 @@
                 }
             }
         },
-        "/barber/reservation/update/{id}": {
-            "put": {
-                "description": "Atualiza uma nova reserva para um barbeiro",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reservation"
-                ],
-                "summary": "Atualização das reservas",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Reservation ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update reservation",
-                        "name": "reservation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/reservation.UpdateReservationReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Sem conteúdo"
-                    }
-                }
-            }
-        },
         "/barber/service/create": {
             "post": {
                 "description": "Cria um novo serviço para a barbeiro e barbearia",
@@ -661,23 +623,6 @@
                     "type": "integer"
                 },
                 "cliente_id": {
-                    "type": "integer"
-                },
-                "data_reserva": {
-                    "type": "string"
-                },
-                "horario_inicial": {
-                    "type": "string"
-                },
-                "servico_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "reservation.UpdateReservationReq": {
-            "type": "object",
-            "properties": {
-                "barbeiro_id": {
                     "type": "integer"
                 },
                 "data_reserva": {
