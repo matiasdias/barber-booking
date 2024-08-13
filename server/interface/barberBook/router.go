@@ -19,4 +19,10 @@ func Router(r *gin.RouterGroup) {
 	client.RouterClient(r.Group("client"))
 	barber.RouterBarber(r.Group(""))
 	barberShop.RouterBarberShop(r.Group("barberShop"))
+
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 }

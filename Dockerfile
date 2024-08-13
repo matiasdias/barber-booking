@@ -10,6 +10,7 @@ COPY . /barber_book
 # Build the Go application
 RUN go build -o barber-book ./main.go
 
-EXPOSE 8080:8080
+EXPOSE 10000
 
+# Start the Go application
 CMD [ "./barber-book" ]
