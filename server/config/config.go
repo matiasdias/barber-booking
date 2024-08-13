@@ -8,6 +8,12 @@ type DatabaseConfig struct {
 	DBPort     string `json:"db_port"`
 }
 
+type Config struct {
+	Environment string         `json:"environment"`
+	Development DatabaseConfig `json:"development"`
+	Production  DatabaseConfig `json:"production"`
+}
+
 type APIConfig struct {
 	APIPort int `json:"api_port"`
 }

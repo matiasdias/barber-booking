@@ -1,8 +1,19 @@
-{
-    "db_name": "barber_book",
-    "db_user": "postgres",
-    "db_password": "123456",
-    "db_host": "database",
-    "db_port": "5432",
-    "api_port":5000
+{   
+    "environment": "development",
+    "api_port":5000,
+    "development": {
+        "db_name": "barber_book",
+        "db_user": "postgres",
+        "db_password": "123456",
+        "db_host": "database",
+        "db_port": "5432"
+    },
+    "production": {
+        "db_name": "barber_book2",
+        "db_user": "postgres",
+        "db_password": "123456",
+        "db_host": "database",
+        "db_port": "5432"
+    }
+ 
 }

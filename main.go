@@ -5,6 +5,11 @@ import (
 	"api/server/interface/barberBook"
 	"fmt"
 	"net/http"
+	"os"
+
+	_ "api/docs"
+
+	_ "api/docs"
 
 	_ "api/docs"
 
@@ -34,7 +39,12 @@ func main() {
 
 	group := errgroup.Group{}
 	group.Go(func() error {
-		return endless.ListenAndServe(fmt.Sprintf(":%d", database.APIConfigInfo.APIPort), externalRouter(log))
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = fmt.Sprintf("%d", database.APIConfigInfo.APIPort)
+		}
+		return endless.ListenAndServe(":"+port, externalRouter(log))
+		//return endless.ListenAndServe(fmt.Sprintf(":%d", database.APIConfigInfo.APIPort), externalRouter(log))
 	})
 
 	if err = group.Wait(); err != nil {
