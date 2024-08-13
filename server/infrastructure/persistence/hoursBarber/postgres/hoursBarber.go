@@ -53,7 +53,7 @@ func (pg *PGHoursBarber) CheckConflitHoursBarber(ctx *gin.Context, hours *hoursB
 func (pg *PGHoursBarber) List(ctx *gin.Context) (hoursBarbers []hoursBarber.ListHoursBarber, err error) {
 	query := `SELECT b.nome, b.contato, htb.dia_semana, htb.horario_inicio,
 	 htb.horario_almoco_inicio, htb.horario_almoco_fim,
-	 htb.horario_fim::time, htb.criadoem, htb.updatedem
+	 htb.horario_fim::time, htb.data_criacao, htb.data_atualizacao
 	 FROM horario_trabalho_barbeiro htb
 	 JOIN barbeiro b ON b.id = htb.barbeiro_id
 	 `

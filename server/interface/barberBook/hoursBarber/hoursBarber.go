@@ -6,6 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateHoursBarber godoc
+// @Summary Criação dos horários de trabalho para o barbeiro
+// @Description Cria os horários de trabalho para o barbeiro
+// @Tags hoursBarber
+// @Accept  json
+// @Produce  json
+// @Param hoursBarberException body CreateHoursBarber true "Create hours barber"
+// @Success 200 "Sem conteúdo"
+// @Router /barber/hoursBarber/create [post]
 func Create(c *gin.Context) {
 	var (
 		req hoursBarber.CreateHoursBarber
@@ -29,6 +38,14 @@ func Create(c *gin.Context) {
 	})
 }
 
+// hoursBarber.ListHoursBarber godoc
+// @Summary Lista todas os horarios de trabalho
+// @Description Lista todos os horários de trabalho para o barbeiro
+// @Tags hoursBarber
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} hoursBarber.ListHoursBarber
+// @Router /barber/hoursBarber/list [get]
 func List(c *gin.Context) {
 	var (
 		err error

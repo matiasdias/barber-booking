@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"api/server/infrastructure/persistence/reservation"
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -18,7 +19,7 @@ type PGReservation struct {
 func (pg *PGReservation) Create(ctx *gin.Context, reser *reservation.Reservation) error {
 
 	query := `INSERT INTO reserva 
-	( barbeiro_id, cliente_id, barbearia_id, data_reserva, horario_inicial_reserva, duracao ) 
+	( barbeiro_id, cliente_id, barbearia_id, servico_id, data_reserva, horario_inicial_reserva ) 
 	VALUES ( $1, $2, $3, $4, $5, $6 ) RETURNING id`
 
 	var reservationID int64
@@ -26,9 +27,9 @@ func (pg *PGReservation) Create(ctx *gin.Context, reser *reservation.Reservation
 		reser.BarberID,
 		reser.ClientID,
 		reser.BarberShopID,
+		reser.ServiceID,
 		reser.DateReservation,
 		reser.StartTime,
-		reser.Duration,
 	).Scan(&reservationID)
 	if err != nil {
 		log.Println("Erro ao inserir e consultar o ID da reserva:", err)
@@ -42,24 +43,24 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
 	query := `
         SELECT EXISTS (
             SELECT 1
-            FROM reserva
-            WHERE barbeiro_id = $1
-            AND data_reserva = $2
-            AND ($3::time, $3::time + $4::interval) OVERLAPS (horario_inicial_reserva, horario_final)
+            FROM reserva r
+            JOIN servico s ON r.servico_id = s.id
+            WHERE (r.barbeiro_id = $1 AND r.data_reserva = $2 AND ($3::time, $3::time + s.duracao) OVERLAPS (r.horario_inicial_reserva, r.horario_final))
+            OR (r.cliente_id = $4 AND r.data_reserva = $2 AND ($3::time, $3::time + s.duracao) OVERLAPS (r.horario_inicial_reserva, r.horario_final))
         )
     `
 	err := pg.DB.QueryRowContext(ctx, query,
 		reser.BarberID,
 		reser.DateReservation,
 		reser.StartTime,
-		reser.Duration,
+		reser.ClientID,
 	).Scan(&exists)
 	if err != nil {
 		log.Println("Erro ao consultar se existe conflito de reservas:", err)
 		return err
 	}
 	if exists {
-		return errors.New("Conflito de horário: já existe uma reserva para o barbeiro nesse horário especifico")
+		return errors.New("Conflito de horário: já existe uma reserva para o barbeiro ou uma reserva para o cliente nesse horário especifico")
 	}
 	return nil
 }
@@ -67,13 +68,14 @@ func (pg *PGReservation) CheckConflictReservation(ctx *gin.Context, reser *reser
 func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.ReservationList, err error) {
 
 	query := `
-		SELECT r.data_reserva, r.horario_inicial_reserva, r.duracao, r.status, r.horario_final, r.criadoem, r.updatedem,
-		ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
-		c.nome, c.email, c.contato
+		SELECT r.data_reserva, r.horario_inicial_reserva, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
+		r.data_reserva_original, ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
+		c.nome, c.email, c.contato, s.nome, s.preco, s.duracao
 		FROM reserva r
 		JOIN barbeiro b ON b.id = r.barbeiro_id
 		JOIN cliente c ON c.id = r.cliente_id
 		JOIN barbearia ba ON ba.id = r.barbearia_id
+		JOIN servico s ON s.id = r.servico_id
 		`
 
 	rows, err := pg.DB.QueryContext(ctx, query)
@@ -88,11 +90,11 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 		var (
 			dataReserva           *string
 			horarioInicialReserva *string
-			duracao               *string
 			status                *string
 			horarioFinal          *string
 			criadoEm              *time.Time
 			updatedEm             *time.Time
+			dataReservaOriginal   *string
 			shopName              *string
 			shopCidade            *string
 			shopRua               *string
@@ -104,16 +106,19 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			clientName            *string
 			clientEmail           *string
 			clientContact         *string
+			serviceName           *string
+			servicePrice          *float64
+			serviceDuration       *string
 		)
 
 		err := rows.Scan(
 			&dataReserva,
 			&horarioInicialReserva,
-			&duracao,
 			&status,
 			&horarioFinal,
 			&criadoEm,
 			&updatedEm,
+			&dataReservaOriginal,
 			&shopName,
 			&shopCidade,
 			&shopRua,
@@ -125,6 +130,9 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			&clientName,
 			&clientEmail,
 			&clientContact,
+			&serviceName,
+			&servicePrice,
+			&serviceDuration,
 		)
 		if err != nil {
 			log.Println("Erro ao escanear linha:", err)
@@ -150,15 +158,20 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			Email:   clientEmail,
 			Name:    clientName,
 		}
+		service := reservation.Service{
+			Name:     serviceName,
+			Price:    servicePrice,
+			Duration: serviceDuration,
+		}
 
 		res := reservation.Reserva{
-			DateReservation: dataReserva,
-			StartTime:       horarioInicialReserva,
-			Duration:        duracao,
-			Status:          status,
-			EndTime:         horarioFinal,
-			CreatedAt:       criadoEm,
-			UpdatedAt:       updatedEm,
+			DateReservation:         dataReserva,
+			StartTime:               horarioInicialReserva,
+			Status:                  status,
+			EndTime:                 horarioFinal,
+			CreatedAt:               criadoEm,
+			UpdatedAt:               updatedEm,
+			DateReservationOriginal: dataReservaOriginal,
 		}
 
 		// Construa uma chave única para a combinação de Shop, Barber e Client
@@ -173,6 +186,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 				Shop:         shop,
 				Barber:       barber,
 				Client:       client,
+				Service:      service,
 				Reservations: []reservation.Reserva{res},
 			}
 		}
@@ -188,4 +202,60 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 	}
 
 	return reservations, nil
+}
+
+func (pg *PGReservation) CheckExceptionForBarber(ctx *gin.Context, barberID *int64, dataReservation *string) (bool, error) {
+	query := `SELECT EXISTS (
+		SELECT 1 
+		FROM horario_trabalho_excecao 
+		WHERE barbeiro_id = $1 
+		AND data_excecao = $2)`
+	var exists bool
+	err := pg.DB.QueryRowContext(ctx, query, barberID, dataReservation).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		log.Printf("Failed to check exception for barber: %v", err)
+		return false, err
+	}
+	return exists, nil
+
+}
+
+func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *int64, updateReq *reservation.Reservation) error {
+	query := `
+        UPDATE reserva
+        SET 
+            barbeiro_id = COALESCE($2, barbeiro_id),
+            data_reserva_original = CASE 
+                WHEN data_reserva_original IS NULL THEN data_criacao 
+       			WHEN data_reserva_original = data_criacao THEN COALESCE($3, data_reserva) 
+       			ELSE data_reserva_original 
+            END,
+            data_reserva = COALESCE($3, data_reserva),
+			servico_id = COALESCE($6, servico_id),
+            horario_inicial_reserva = COALESCE($4, horario_inicial_reserva),
+            status = CASE 
+                WHEN status = 'pendente' AND $3 IS NOT NULL THEN 'ativo'
+                WHEN status = 'pendente' AND $4 IS NOT NULL THEN 'ativo'
+                WHEN status = 'pendente' AND $2 IS NOT NULL THEN 'ativo'
+                ELSE COALESCE($5, status)
+            END,
+            data_atualizacao = now()
+        WHERE id = $1
+        RETURNING status
+    `
+	var newStatus string
+	err := pg.DB.QueryRowContext(ctx, query, reservationID,
+		updateReq.BarberID,
+		updateReq.DateReservation,
+		updateReq.StartTime,
+		updateReq.Status,
+		updateReq.ServiceID).Scan(&newStatus)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

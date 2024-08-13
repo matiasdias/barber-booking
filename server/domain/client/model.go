@@ -3,7 +3,6 @@ package client
 import "time"
 
 type Client struct {
-	ID       *int64  `conversor:"id"`
 	Name     *string `conversor:"nome"`
 	Email    *string `conversor:"email"`
 	Contato  *string `conversor:"contato"`
@@ -16,6 +15,6 @@ type Clients struct {
 	Email    *string    `json:"email" conversor:"email"`
 	Contato  *string    `json:"contato" conversor:"contato"`
 	PassWord *string    `json:"senha" conversor:"senha"`
-	CriadoEm *time.Time `json:"criado_em" conversor:"criado_em"`
-	UpdateEm *time.Time `json:"updated_em" conversor:"updated_em"`
+	CriadoEm *time.Time `json:"data_criacao" conversor:"data_criacao"`
+	UpdateEm *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`
 }

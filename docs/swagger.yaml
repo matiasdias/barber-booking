@@ -1,0 +1,450 @@
+basePath: /
+definitions:
+  api_server_aplication_hoursBarber.Barber:
+    properties:
+      contato:
+        type: string
+      nome:
+        type: string
+    type: object
+  api_server_aplication_hoursBarber.HoursBarbers:
+    properties:
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      dia_semana:
+        type: string
+      horario_almoco_final:
+        type: string
+      horario_almoco_inicial:
+        type: string
+      horario_final:
+        type: string
+      horario_inicial:
+        type: string
+    type: object
+  api_server_aplication_hoursBarber.ListHoursBarber:
+    properties:
+      barbeiro:
+        $ref: '#/definitions/api_server_aplication_hoursBarber.Barber'
+      horario_trabalho:
+        items:
+          $ref: '#/definitions/api_server_aplication_hoursBarber.HoursBarbers'
+        type: array
+    type: object
+  barber.CreateBarber:
+    properties:
+      contato:
+        type: string
+      nome:
+        type: string
+    required:
+    - contato
+    - nome
+    type: object
+  barber.ListBarbers:
+    properties:
+      contato:
+        type: string
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+    type: object
+  barberShop.CreateBarberShop:
+    properties:
+      cidade:
+        type: string
+      contato:
+        type: string
+      nome:
+        type: string
+      numero_residencia:
+        type: integer
+      ponto_referencia:
+        type: string
+      rua:
+        type: string
+    required:
+    - cidade
+    - contato
+    - nome
+    - numero_residencia
+    - ponto_referencia
+    - rua
+    type: object
+  barberShop.ListBarbserShop:
+    properties:
+      cidade:
+        type: string
+      contato:
+        type: string
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+      numero_residencia:
+        type: integer
+      ponto_referencia:
+        type: string
+      rua:
+        type: string
+    type: object
+  client.CreateClient:
+    properties:
+      contato:
+        type: string
+      email:
+        type: string
+      nome:
+        type: string
+      senha:
+        type: string
+    required:
+    - contato
+    - email
+    - nome
+    - senha
+    type: object
+  client.ListClients:
+    properties:
+      contato:
+        type: string
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+      senha:
+        type: string
+    type: object
+  hoursBarber.CreateException:
+    properties:
+      barbeiro_id:
+        type: integer
+      data_execeção:
+        type: string
+      motivo:
+        type: string
+    required:
+    - barbeiro_id
+    - data_execeção
+    type: object
+  hoursBarber.CreateHoursBarber:
+    properties:
+      barbeiro_id:
+        type: integer
+      dia_semana:
+        type: string
+      horario_almoco_final:
+        type: string
+      horario_almoco_inicial:
+        type: string
+      horario_final:
+        type: string
+      horario_inicial:
+        type: string
+    required:
+    - barbeiro_id
+    - dia_semana
+    - horario_almoco_final
+    - horario_almoco_inicial
+    - horario_final
+    - horario_inicial
+    type: object
+  reservation.CreateReservation:
+    properties:
+      barbearia_id:
+        type: integer
+      barbeiro_id:
+        type: integer
+      cliente_id:
+        type: integer
+      data_reserva:
+        type: string
+      horario_inicial:
+        type: string
+      servico_id:
+        type: integer
+    required:
+    - barbearia_id
+    - barbeiro_id
+    - cliente_id
+    - data_reserva
+    - horario_inicial
+    - servico_id
+    type: object
+  service.CreateService:
+    properties:
+      duracao:
+        type: string
+      nome:
+        type: string
+      preco:
+        type: number
+    required:
+    - nome
+    - preco
+    type: object
+  service.ListServices:
+    properties:
+      data_atualizacao:
+        type: string
+      data_criacao:
+        type: string
+      duracao:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+      preco:
+        type: number
+    type: object
+host: localhost:5000
+info:
+  contact: {}
+  description: This is a sample server Petstore server.
+  title: Barber Shop API
+  version: "1.0"
+paths:
+  /barber/barberShop/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria um estavelecimento
+      parameters:
+      - description: Create barber shop
+        in: body
+        name: barberShop
+        required: true
+        schema:
+          $ref: '#/definitions/barberShop.CreateBarberShop'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação das barbearias
+      tags:
+      - barberShop
+  /barber/barberShop/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todas as barbearias disponíveis para serem feitas as reservas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/barberShop.ListBarbserShop'
+            type: array
+      summary: Lista todas as barbearias
+      tags:
+      - barberShop
+  /barber/client/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo cliente
+      parameters:
+      - description: Create client
+        in: body
+        name: client
+        required: true
+        schema:
+          $ref: '#/definitions/client.CreateClient'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Create client
+      tags:
+      - client
+  /barber/client/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os clientes da barbearia
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/client.ListClients'
+            type: array
+      summary: List os clientes da barbearia
+      tags:
+      - client
+  /barber/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo barbeiro
+      parameters:
+      - description: Create barber
+        in: body
+        name: barber
+        required: true
+        schema:
+          $ref: '#/definitions/barber.CreateBarber'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação dos barbeiros
+      tags:
+      - barber
+  /barber/hoursBarber/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria os horários de trabalho para o barbeiro
+      parameters:
+      - description: Create hours barber
+        in: body
+        name: hoursBarberException
+        required: true
+        schema:
+          $ref: '#/definitions/hoursBarber.CreateHoursBarber'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação dos horários de trabalho para o barbeiro
+      tags:
+      - hoursBarber
+  /barber/hoursBarber/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os horários de trabalho para o barbeiro
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api_server_aplication_hoursBarber.ListHoursBarber'
+            type: array
+      summary: Lista todas os horarios de trabalho
+      tags:
+      - hoursBarber
+  /barber/hoursBarberException/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma exceção de hora de trabalho para o barbeiro
+      parameters:
+      - description: Create hours barber exception
+        in: body
+        name: hoursBarberException
+        required: true
+        schema:
+          $ref: '#/definitions/hoursBarber.CreateException'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação de exceções de hora de trabalho para o barbearia
+      tags:
+      - hoursBarber
+  /barber/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os barbeiros da barbearia
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/barber.ListBarbers'
+            type: array
+      summary: Lista os barbeiros da barbearia
+      tags:
+      - barber
+  /barber/reservation/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova reserva para um barbeiro
+      parameters:
+      - description: Create reservation
+        in: body
+        name: barber
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.CreateReservation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação das reservas
+      tags:
+      - reservation
+  /barber/service/create:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo serviço para a barbeiro e barbearia
+      parameters:
+      - description: Create service
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Criação dos serviços
+      tags:
+      - service
+  /barber/service/list:
+    get:
+      consumes:
+      - application/json
+      description: Lista todos os serviços ofertados pela barbearia
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.ListServices'
+            type: array
+      summary: Lista os serviços da barbearia
+      tags:
+      - service
+swagger: "2.0"

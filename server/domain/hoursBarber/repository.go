@@ -9,12 +9,14 @@ import (
 )
 
 type repository struct {
-	pg *postgres.PGHoursBarber
+	pg         *postgres.PGHoursBarber
+	pgExcption *postgres.PGHoursBarberException
 }
 
 func newRepository(db *sql.DB) *repository {
 	return &repository{
-		pg: &postgres.PGHoursBarber{DB: db},
+		pg:         &postgres.PGHoursBarber{DB: db},
+		pgExcption: &postgres.PGHoursBarberException{DB: db},
 	}
 }
 
@@ -28,4 +30,16 @@ func (r *repository) CheckConflitHoursBarber(ctx *gin.Context, hours *hoursBarbe
 
 func (r *repository) List(ctx *gin.Context) (hoursBarbers []hoursBarber.ListHoursBarber, err error) {
 	return r.pg.List(ctx)
+}
+
+func (r *repository) CreateHoursBarberException(ctx *gin.Context, hoursException *hoursBarber.HoursBarberException) error {
+	return r.pgExcption.CreateHoursBarberException(ctx, hoursException)
+}
+
+func (r *repository) MarkReservationAsPending(ctx *gin.Context, BarberID *int64, hoursExeptionID *string) (marked bool, err error) {
+	return r.pgExcption.MarkReservationAsPending(ctx, BarberID, hoursExeptionID)
+}
+
+func (r *repository) HoursExecptionExists(ctx *gin.Context, hoursException *hoursBarber.HoursBarberException) (exists bool, err error) {
+	return r.pgExcption.HoursExecptionExists(ctx, hoursException)
 }

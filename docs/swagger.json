@@ -1,0 +1,681 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server Petstore server.",
+        "title": "Barber Shop API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5000",
+    "basePath": "/",
+    "paths": {
+        "/barber/barberShop/create": {
+            "post": {
+                "description": "Cria um estavelecimento",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barberShop"
+                ],
+                "summary": "Criação das barbearias",
+                "parameters": [
+                    {
+                        "description": "Create barber shop",
+                        "name": "barberShop",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/barberShop.CreateBarberShop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/barberShop/list": {
+            "get": {
+                "description": "Lista todas as barbearias disponíveis para serem feitas as reservas",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barberShop"
+                ],
+                "summary": "Lista todas as barbearias",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/barberShop.ListBarbserShop"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barber/client/create": {
+            "post": {
+                "description": "Cria um novo cliente",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client"
+                ],
+                "summary": "Create client",
+                "parameters": [
+                    {
+                        "description": "Create client",
+                        "name": "client",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.CreateClient"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/client/list": {
+            "get": {
+                "description": "Lista todos os clientes da barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client"
+                ],
+                "summary": "List os clientes da barbearia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/client.ListClients"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barber/create": {
+            "post": {
+                "description": "Cria um novo barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barber"
+                ],
+                "summary": "Criação dos barbeiros",
+                "parameters": [
+                    {
+                        "description": "Create barber",
+                        "name": "barber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/barber.CreateBarber"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/hoursBarber/create": {
+            "post": {
+                "description": "Cria os horários de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Criação dos horários de trabalho para o barbeiro",
+                "parameters": [
+                    {
+                        "description": "Create hours barber",
+                        "name": "hoursBarberException",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hoursBarber.CreateHoursBarber"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/hoursBarber/list": {
+            "get": {
+                "description": "Lista todos os horários de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Lista todas os horarios de trabalho",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api_server_aplication_hoursBarber.ListHoursBarber"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barber/hoursBarberException/create": {
+            "post": {
+                "description": "Cria uma exceção de hora de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Criação de exceções de hora de trabalho para o barbearia",
+                "parameters": [
+                    {
+                        "description": "Create hours barber exception",
+                        "name": "hoursBarberException",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hoursBarber.CreateException"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/list": {
+            "get": {
+                "description": "Lista todos os barbeiros da barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "barber"
+                ],
+                "summary": "Lista os barbeiros da barbearia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/barber.ListBarbers"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barber/reservation/create": {
+            "post": {
+                "description": "Cria uma nova reserva para um barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reservation"
+                ],
+                "summary": "Criação das reservas",
+                "parameters": [
+                    {
+                        "description": "Create reservation",
+                        "name": "barber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reservation.CreateReservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/service/create": {
+            "post": {
+                "description": "Cria um novo serviço para a barbeiro e barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "service"
+                ],
+                "summary": "Criação dos serviços",
+                "parameters": [
+                    {
+                        "description": "Create service",
+                        "name": "service",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CreateService"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sem conteúdo"
+                    }
+                }
+            }
+        },
+        "/barber/service/list": {
+            "get": {
+                "description": "Lista todos os serviços ofertados pela barbearia",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "service"
+                ],
+                "summary": "Lista os serviços da barbearia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/service.ListServices"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api_server_aplication_hoursBarber.Barber": {
+            "type": "object",
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_server_aplication_hoursBarber.HoursBarbers": {
+            "type": "object",
+            "properties": {
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "dia_semana": {
+                    "type": "string"
+                },
+                "horario_almoco_final": {
+                    "type": "string"
+                },
+                "horario_almoco_inicial": {
+                    "type": "string"
+                },
+                "horario_final": {
+                    "type": "string"
+                },
+                "horario_inicial": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_server_aplication_hoursBarber.ListHoursBarber": {
+            "type": "object",
+            "properties": {
+                "barbeiro": {
+                    "$ref": "#/definitions/api_server_aplication_hoursBarber.Barber"
+                },
+                "horario_trabalho": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api_server_aplication_hoursBarber.HoursBarbers"
+                    }
+                }
+            }
+        },
+        "barber.CreateBarber": {
+            "type": "object",
+            "required": [
+                "contato",
+                "nome"
+            ],
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "barber.ListBarbers": {
+            "type": "object",
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "barberShop.CreateBarberShop": {
+            "type": "object",
+            "required": [
+                "cidade",
+                "contato",
+                "nome",
+                "numero_residencia",
+                "ponto_referencia",
+                "rua"
+            ],
+            "properties": {
+                "cidade": {
+                    "type": "string"
+                },
+                "contato": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "numero_residencia": {
+                    "type": "integer"
+                },
+                "ponto_referencia": {
+                    "type": "string"
+                },
+                "rua": {
+                    "type": "string"
+                }
+            }
+        },
+        "barberShop.ListBarbserShop": {
+            "type": "object",
+            "properties": {
+                "cidade": {
+                    "type": "string"
+                },
+                "contato": {
+                    "type": "string"
+                },
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "numero_residencia": {
+                    "type": "integer"
+                },
+                "ponto_referencia": {
+                    "type": "string"
+                },
+                "rua": {
+                    "type": "string"
+                }
+            }
+        },
+        "client.CreateClient": {
+            "type": "object",
+            "required": [
+                "contato",
+                "email",
+                "nome",
+                "senha"
+            ],
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "senha": {
+                    "type": "string"
+                }
+            }
+        },
+        "client.ListClients": {
+            "type": "object",
+            "properties": {
+                "contato": {
+                    "type": "string"
+                },
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "senha": {
+                    "type": "string"
+                }
+            }
+        },
+        "hoursBarber.CreateException": {
+            "type": "object",
+            "required": [
+                "barbeiro_id",
+                "data_execeção"
+            ],
+            "properties": {
+                "barbeiro_id": {
+                    "type": "integer"
+                },
+                "data_execeção": {
+                    "type": "string"
+                },
+                "motivo": {
+                    "type": "string"
+                }
+            }
+        },
+        "hoursBarber.CreateHoursBarber": {
+            "type": "object",
+            "required": [
+                "barbeiro_id",
+                "dia_semana",
+                "horario_almoco_final",
+                "horario_almoco_inicial",
+                "horario_final",
+                "horario_inicial"
+            ],
+            "properties": {
+                "barbeiro_id": {
+                    "type": "integer"
+                },
+                "dia_semana": {
+                    "type": "string"
+                },
+                "horario_almoco_final": {
+                    "type": "string"
+                },
+                "horario_almoco_inicial": {
+                    "type": "string"
+                },
+                "horario_final": {
+                    "type": "string"
+                },
+                "horario_inicial": {
+                    "type": "string"
+                }
+            }
+        },
+        "reservation.CreateReservation": {
+            "type": "object",
+            "required": [
+                "barbearia_id",
+                "barbeiro_id",
+                "cliente_id",
+                "data_reserva",
+                "horario_inicial",
+                "servico_id"
+            ],
+            "properties": {
+                "barbearia_id": {
+                    "type": "integer"
+                },
+                "barbeiro_id": {
+                    "type": "integer"
+                },
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "data_reserva": {
+                    "type": "string"
+                },
+                "horario_inicial": {
+                    "type": "string"
+                },
+                "servico_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "service.CreateService": {
+            "type": "object",
+            "required": [
+                "nome",
+                "preco"
+            ],
+            "properties": {
+                "duracao": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
+                }
+            }
+        },
+        "service.ListServices": {
+            "type": "object",
+            "properties": {
+                "data_atualizacao": {
+                    "type": "string"
+                },
+                "data_criacao": {
+                    "type": "string"
+                },
+                "duracao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

@@ -4,24 +4,25 @@ nome varchar(250) NOT NULL,
 email varchar(250) NOT NULL UNIQUE,
 contato varchar(20) UNIQUE NOT NULL,
 senha varchar(100) NOT NULL,
-criadoem timestamp DEFAULT now() NOT NULL,
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL,
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS servico (
 id serial PRIMARY KEY,
 nome varchar(150) NOT NULL,
 preco numeric(10, 2),
-craidoem timestamp DEFAULT now() NOT NULL,
-updatedem timestamp
+duracao interval,
+data_criacao timestamp DEFAULT now() NOT NULL,
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS barbeiro (
 id serial PRIMARY KEY,
 nome varchar(150) NOT NULL,
 contato varchar(20) UNIQUE,
-criadoem timestamp DEFAULT now() NOT NULL,
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL,
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS barbearia (
@@ -32,8 +33,8 @@ rua varchar(255) NOT NULL,
 numero_residencia integer NOT NULL,
 ponto_referencia varchar(255),
 contato varchar(20) UNIQUE,
-criadoem timestamp DEFAULT now() NOT NULL, 
-updatedem timestamp
+data_criacao timestamp DEFAULT now() NOT NULL, 
+data_atualizacao timestamp
 );
 
 CREATE TABLE IF NOT EXISTS horario_trabalho_barbeiro (
@@ -44,27 +45,41 @@ horario_inicio time NOT NULL,
 horario_almoco_inicio time NOT NULL,
 horario_almoco_fim time NOT NULL,
 horario_fim time NOT NULL,
-criadoem timestamp DEFAULT now() NOT NULL, 
-updatedem timestamp,
+data_criacao timestamp DEFAULT now() NOT NULL, 
+data_atualizacao timestamp,
 CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id)
 );
 
+
+CREATE TYPE tipo_status AS ENUM ('ativo', 'cancelado', 'pendente');
+
 CREATE TABLE IF NOT EXISTS reserva (
-id serial PRIMARY KEY,
-barbeiro_id integer NOT NULL,
-cliente_id integer NOT NULL,
-barbearia_id integer NOT NULL,
-data_reserva date NOT NULL,
-data_reserva_original date,
-horario_inicial_reserva time NOT NULL,
-duracao interval NOT NULL,
-status varchar(20) DEFAULT 'ativa',
-horario_final time GENERATED ALWAYS AS (horario_inicial_reserva + duracao) STORED,
-criadoem timestamp DEFAULT now() NOT NULL, 
-updatedem timestamp,
-CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id),
-CONSTRAINT id_cliente_fk FOREIGN KEY (cliente_id) REFERENCES cliente(id),
-CONSTRAINT id_barbearia_fk FOREIGN KEY (barbearia_id) REFERENCES barbearia(id)
+    id serial PRIMARY KEY,
+    barbeiro_id integer NOT NULL,
+    cliente_id integer NOT NULL,
+    barbearia_id integer NOT NULL,
+    servico_id integer NOT NULL,
+    data_reserva date NOT NULL,
+    data_reserva_original date,
+    horario_inicial_reserva time NOT NULL,
+    status tipo_status DEFAULT 'ativo',
+    horario_final time,
+    data_criacao timestamp DEFAULT now() NOT NULL, 
+    data_atualizacao timestamp,
+    CONSTRAINT barbeiro_id_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id),
+    CONSTRAINT cliente_id_fk FOREIGN KEY (cliente_id) REFERENCES cliente(id),
+    CONSTRAINT barbearia_id_fk FOREIGN KEY (barbearia_id) REFERENCES barbearia(id),
+    CONSTRAINT servico_id_fk FOREIGN KEY (servico_id) REFERENCES servico(id)
+);
+
+CREATE TABLE IF NOT EXISTS horario_trabalho_excecao (
+    id serial PRIMARY KEY,
+    barbeiro_id integer NOT NULL,
+    data_excecao date NOT NULL,
+    motivo text,
+    data_criacao timestamp DEFAULT now() NOT NULL,
+    data_atualizacao timestamp,
+    CONSTRAINT id_barbeiro_fk FOREIGN KEY (barbeiro_id) REFERENCES barbeiro(id)
 );
 
 CREATE OR REPLACE FUNCTION day_of_week_to_text(dow integer) RETURNS VARCHAR AS $$
@@ -86,7 +101,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION valida_horario_reserva() RETURNS TRIGGER AS $$
 DECLARE
     dia_semana_reserva VARCHAR;
+    duracao_servico interval;
 BEGIN
+    SELECT duracao INTO duracao_servico FROM servico WHERE id = NEW.servico_id;
+
     dia_semana_reserva := unaccent(day_of_week_to_text(EXTRACT(DOW FROM NEW.data_reserva::date)::integer));
     dia_semana_reserva := LOWER(REPLACE(TRIM(dia_semana_reserva), '-', ''));
 
@@ -97,13 +115,15 @@ BEGIN
         WHERE barbeiro_id = NEW.barbeiro_id
         AND unaccent(LOWER(REPLACE(dia_semana, '-', ''))) = dia_semana_reserva -- Compara o dia da semana da reserva com o dia da semana especificado no horário do barbeiro
         AND NEW.horario_inicial_reserva >= horario_inicio
-        AND (NEW.horario_inicial_reserva + NEW.duracao) <= horario_fim
+        AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_fim
         AND (
-            (NEW.horario_inicial_reserva >= horario_inicio AND (NEW.horario_inicial_reserva + NEW.duracao) <= horario_almoco_inicio)
+            (NEW.horario_inicial_reserva >= horario_inicio AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_almoco_inicio)
             OR
-            (NEW.horario_inicial_reserva >= horario_almoco_fim AND (NEW.horario_inicial_reserva + NEW.duracao) <= horario_fim)
+            (NEW.horario_inicial_reserva >= horario_almoco_fim AND (NEW.horario_inicial_reserva + duracao_servico) <= horario_fim)
         )
     ) THEN
+        NEW.horario_final := NEW.horario_inicial_reserva + duracao_servico;
+
         RETURN NEW; 
     ELSE
         RAISE EXCEPTION 'Reserva não permitida: Reserva fora do horário de trabalho do barbeiro para o dia da semana especificado';
@@ -118,7 +138,7 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS trig_valida_horario_reserva ON reserva;
 
 CREATE TRIGGER trig_valida_horario_reserva
-BEFORE INSERT ON reserva
+BEFORE INSERT OR UPDATE ON reserva
 FOR EACH ROW EXECUTE FUNCTION valida_horario_reserva();
 
 CREATE EXTENSION IF NOT EXISTS unaccent;

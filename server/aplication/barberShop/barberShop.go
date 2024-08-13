@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BarberShopCreate(c *gin.Context, req *CreateBarberShop) (err error) {
+func BarberShopCreate(ctx *gin.Context, req *CreateBarberShop) (err error) {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
@@ -21,7 +21,6 @@ func BarberShopCreate(c *gin.Context, req *CreateBarberShop) (err error) {
 	service := barberShop.GetService(barberShop.GetRepository(db))
 
 	dados := &barberShop.BarberShop{
-		ID:               req.ID,
 		Name:             req.Name,
 		Cidade:           req.Cidade,
 		Rua:              req.Rua,
@@ -40,7 +39,7 @@ func BarberShopCreate(c *gin.Context, req *CreateBarberShop) (err error) {
 	}
 	dados.Contato = contato
 
-	if err := service.Create(c, dados); err != nil {
+	if err := service.Create(ctx, dados); err != nil {
 		log.Printf("Failed to create barber-shop: %v", err)
 		return err
 	}
@@ -48,18 +47,37 @@ func BarberShopCreate(c *gin.Context, req *CreateBarberShop) (err error) {
 	return
 }
 
-func ListBshop(c *gin.Context) (barberShops []barberShop.ListBarberShop, err error) {
+func ListBshop(ctx *gin.Context) (barberShops []*ListBarbserShop, err error) {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
 		return
 	}
 	defer db.Close()
-	service := barberShop.GetService(barberShop.GetRepository(db))
-	barberShops, err = service.List(c)
-	if err != nil {
-		log.Printf("Failed to get barber-shops: %v", err)
+
+	var (
+		service = barberShop.GetService(barberShop.GetRepository(db))
+		dados   []barberShop.ListBarberShop
+	)
+
+	if dados, err = service.List(ctx); err != nil {
+		log.Printf("Failed to list barber-shops: %v", err)
 		return
+	}
+
+	for i := range dados {
+		barber := &ListBarbserShop{
+			ID:               dados[i].ID,
+			Name:             dados[i].Name,
+			Cidade:           dados[i].Cidade,
+			Rua:              dados[i].Rua,
+			NumeroResidencia: dados[i].NumeroResidencia,
+			PontoReferencia:  dados[i].PontoReferencia,
+			Contato:          dados[i].Contato,
+			CriadoEm:         dados[i].CriadoEm,
+			UpdateEm:         dados[i].UpdateEm,
+		}
+		barberShops = append(barberShops, barber)
 	}
 	return
 }

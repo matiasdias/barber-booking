@@ -3,7 +3,6 @@ package barberShop
 import "time"
 
 type BarberShop struct {
-	ID               *int64  `conversor:"id"`
 	Name             *string `conversor:"nome" `
 	Cidade           *string `conversor:"cidade"`
 	Rua              *string `conversor:"rua" json:"rua"`
@@ -20,6 +19,6 @@ type ListBarberShop struct {
 	NumeroResidencia *int64     `json:"numero_residencia" conversor:"numero_residencia"`
 	PontoReferencia  *string    `json:"ponto_referencia" conversor:"ponto_referencia"`
 	Contato          *string    `json:"contato" conversor:"contato"`
-	CriadoEm         *time.Time `json:"criado_em" conversor:"criado_em"`
-	UpdateEm         *time.Time `json:"updated_em" conversor:"updated_em"`
+	CriadoEm         *time.Time `json:"data_criacao" conversor:"data_criacao"`
+	UpdateEm         *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`
 }

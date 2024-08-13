@@ -3,7 +3,6 @@ package service
 import (
 	"api/server/database"
 	"api/server/domain/service"
-	"errors"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -20,14 +19,18 @@ func Create(ctx *gin.Context, services *CreateService) (err error) {
 	server := service.GetService(service.GetRepository(db))
 
 	dados := &service.Services{
-		ID:    services.ID,
-		Name:  services.Name,
-		Price: services.Price,
+		Name:     services.Name,
+		Price:    services.Price,
+		Duration: services.Duration,
 	}
-	if *dados.Name == "" || *dados.Price == 0.0 {
-		log.Println("Failed to create service: missing required fields")
-		return errors.New("missing required fields")
+
+	formatDuration, err := server.ValidadeService(dados)
+	if err != nil {
+		log.Printf("Failed to validate service: %v", err)
+		return err
 	}
+
+	dados.Duration = formatDuration.Duration
 
 	if err := server.Create(ctx, dados); err != nil {
 		log.Printf("Failed to create service: %v", err)
@@ -37,7 +40,7 @@ func Create(ctx *gin.Context, services *CreateService) (err error) {
 	return
 }
 
-func List(ctx *gin.Context) (services []service.ListService, err error) {
+func List(ctx *gin.Context) (services []*ListServices, err error) {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
@@ -45,11 +48,27 @@ func List(ctx *gin.Context) (services []service.ListService, err error) {
 	}
 	defer db.Close()
 
-	server := service.GetService(service.GetRepository(db))
-	services, err = server.List(ctx)
-	if err != nil {
+	var (
+		server = service.GetService(service.GetRepository(db))
+		dados  []service.ListService
+	)
+
+	if dados, err = server.List(ctx); err != nil {
 		log.Printf("Failed to list services: %v", err)
 		return
 	}
+
+	for i := range dados {
+		ser := &ListServices{
+			ID:       dados[i].ID,
+			Name:     dados[i].Name,
+			Price:    dados[i].Price,
+			Duration: dados[i].Duration,
+			CriadoEm: dados[i].CriadoEm,
+			UpdateEm: dados[i].UpdateEm,
+		}
+		services = append(services, ser)
+	}
+
 	return
 }

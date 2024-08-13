@@ -12,18 +12,11 @@ import (
 )
 
 func Router(r *gin.RouterGroup) {
-
-	r.POST("client/create", client.Create)
-	r.POST("barber/create", barber.Create)
-	r.POST("service/create", service.Create)
-	r.POST("barberShop/create", barberShop.Create)
-	r.POST("hoursBarber/create", hoursBarber.Create)
-	r.POST("reservation/create", reservation.Create)
-
-	r.GET("client/list", client.List)
-	r.GET("barber/list", barber.List)
-	r.GET("service/list", service.List)
-	r.GET("barberShop/list", barberShop.List)
-	r.GET("hoursBarber/list", hoursBarber.List)
-	r.GET("reservation/list", reservation.List)
+	reservation.RouterReservation(r.Group("reservation"))
+	service.RouterService(r.Group("service"))
+	hoursBarber.RouterHoursBarber(r.Group("hoursBarber"))
+	hoursBarber.RouterHoursExecption(r.Group("hoursBarberException"))
+	client.RouterClient(r.Group("client"))
+	barber.RouterBarber(r.Group(""))
+	barberShop.RouterBarberShop(r.Group("barberShop"))
 }

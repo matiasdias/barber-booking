@@ -14,9 +14,9 @@ type PGService struct {
 
 func (pg *PGService) Create(ctx *gin.Context, service *service.Services) (err error) {
 
-	query := "INSERT INTO servico ( nome, preco ) VALUES ( $1, $2 ) RETURNING id"
+	query := "INSERT INTO servico ( nome, preco, duracao ) VALUES ( $1, $2, $3 ) RETURNING id"
 	var serviceID int64
-	err = pg.DB.QueryRowContext(ctx, query, service.Name, service.Price).Scan(&serviceID)
+	err = pg.DB.QueryRowContext(ctx, query, service.Name, service.Price, service.Duration).Scan(&serviceID)
 	if err != nil {
 		log.Println("Erro ao inserir e consultar o ID do servico:", err)
 		return err
@@ -26,7 +26,7 @@ func (pg *PGService) Create(ctx *gin.Context, service *service.Services) (err er
 
 func (pg *PGService) List(ctx *gin.Context) (services []service.ListService, err error) {
 
-	query := "SELECT id, nome, preco, criadoem, updatedem FROM servico"
+	query := "SELECT id, nome, preco, duracao, data_criacao, data_atualizacao FROM servico"
 
 	rows, err := pg.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -36,7 +36,7 @@ func (pg *PGService) List(ctx *gin.Context) (services []service.ListService, err
 	defer rows.Close()
 	for rows.Next() {
 		var service service.ListService
-		err = rows.Scan(&service.ID, &service.Name, &service.Price, &service.CriadoEm, &service.UpdateEm)
+		err = rows.Scan(&service.ID, &service.Name, &service.Price, &service.Duration, &service.CriadoEm, &service.UpdateEm)
 		if err != nil {
 			log.Println("Erro ao listar os consulta:", err)
 			return

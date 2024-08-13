@@ -25,7 +25,6 @@ func GetRepository(db *sql.DB) IHoursBarber {
 
 func (s *Service) Create(ctx *gin.Context, hours *HoursBarber) (err error) {
 	dados := &hoursBarber.HoursBarber{
-		ID:             hours.ID,
 		BarberID:       hours.BarberID,
 		DayOfWeek:      hours.DayOfWeek,
 		StartTime:      hours.StartTime,
@@ -98,7 +97,6 @@ func (s *Service) ValidateHoursBarber(hours *HoursBarber) (format *FormartHours,
 
 func (s *Service) CheckConflitHoursBarber(ctx *gin.Context, hours *HoursBarber) (conflit bool, err error) {
 	dados := &hoursBarber.HoursBarber{
-		ID:             hours.ID,
 		BarberID:       hours.BarberID,
 		DayOfWeek:      hours.DayOfWeek,
 		StartTime:      hours.StartTime,
@@ -141,4 +139,50 @@ func (s *Service) List(ctx *gin.Context) (hours []ListHoursBarber, err error) {
 		hours[i] = shop
 	}
 	return
+}
+
+func (s *Service) CreateHoursBarberException(ctx *gin.Context, hoursException *HoursBarberException) (err error) {
+	dados := &hoursBarber.HoursBarberException{
+		BarberID:      hoursException.BarberID,
+		DateException: hoursException.DateException,
+		Reason:        hoursException.Reason,
+	}
+	return s.repo.CreateHoursBarberException(ctx, dados)
+}
+
+func (s *Service) ValidateHoursBarberExecption(hoursBarberExecption *HoursBarberException) (format *FormartHoursException, err error) {
+	if hoursBarberExecption.BarberID == nil || *hoursBarberExecption.BarberID == 0 {
+		return nil, errors.New("missing or invalid BarberID")
+	}
+
+	if hoursBarberExecption.Reason == nil || *hoursBarberExecption.Reason == "" {
+		return nil, errors.New("missing or invalid Reason")
+	}
+
+	dateExecption, err := utils.ParseStringFromDate(hoursBarberExecption.DateException)
+	if err != nil {
+		return nil, err
+	}
+
+	dateExecptionFormat := dateExecption.Format("2006-01-02")
+
+	format = &FormartHoursException{
+		DateException: &dateExecptionFormat,
+	}
+
+	return format, nil
+
+}
+
+func (s *Service) MarkReservationAsPending(ctx *gin.Context, BarberID *int64, hoursExeptionID *string) (marked bool, err error) {
+	return s.repo.MarkReservationAsPending(ctx, BarberID, hoursExeptionID)
+}
+
+func (s *Service) HoursExecptionExists(ctx *gin.Context, hoursException *HoursBarberException) (exists bool, err error) {
+	dados := &hoursBarber.HoursBarberException{
+		BarberID:      hoursException.BarberID,
+		DateException: hoursException.DateException,
+		Reason:        hoursException.Reason,
+	}
+	return s.repo.HoursExecptionExists(ctx, dados)
 }
