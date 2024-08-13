@@ -9,6 +9,8 @@ import (
 
 	_ "api/docs"
 
+	_ "api/docs"
+
 	"github.com/fvbock/endless"
 
 	"github.com/gin-gonic/gin"

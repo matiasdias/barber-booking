@@ -127,6 +127,7 @@ func Update(ctx *gin.Context, reservationID *int64, reser *UpdateReservationReq)
 		BarberID:        reser.BarberID,
 		DateReservation: reser.DateReservation,
 		StartTime:       reser.StartTime,
+		Status:          reser.Status,
 		ServiceID:       reser.ServiceID,
 	}
 

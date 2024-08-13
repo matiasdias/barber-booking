@@ -41,6 +41,14 @@ func Create(c *gin.Context) {
 
 }
 
+// ReservationList godoc
+// @Summary Lista as reserva do cliente com o barbeiro
+// @Description Lista todas as reservas do cliente
+// @Tags reservation
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} ReservationList
+// @Router /barber/reservation/list [get]
 func List(c *gin.Context) {
 	var (
 		err error
