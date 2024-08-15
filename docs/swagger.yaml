@@ -188,6 +188,23 @@ definitions:
     - horario_inicial
     - servico_id
     type: object
+  reservation.UpdateReservationReq:
+    properties:
+      barbeiro_id:
+        type: integer
+      data_reserva:
+        type: string
+      dateRservationOriginal:
+        type: string
+      horario_inicial:
+        type: string
+      id:
+        type: integer
+      servico_id:
+        type: integer
+      status:
+        type: string
+    type: object
   service.CreateService:
     properties:
       duracao:
@@ -408,6 +425,31 @@ paths:
         "200":
           description: Sem conteúdo
       summary: Criação das reservas
+      tags:
+      - reservation
+  /barber/reservation/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Atualiza uma nova reserva para um barbeiro
+      parameters:
+      - description: Reservation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update reservation
+        in: body
+        name: reservation
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.UpdateReservationReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sem conteúdo
+      summary: Atualização das reservas
       tags:
       - reservation
   /barber/service/create:
