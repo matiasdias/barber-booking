@@ -1,17 +1,12 @@
 package main
 
 import (
+	_ "api/docs"
 	"api/server/database"
 	"api/server/interface/barberBook"
 	"fmt"
 	"net/http"
 	"os"
-
-	_ "api/docs"
-
-	_ "api/docs"
-
-	_ "api/docs"
 
 	"github.com/fvbock/endless"
 
