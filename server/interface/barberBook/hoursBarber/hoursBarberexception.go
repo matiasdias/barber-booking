@@ -37,3 +37,16 @@ func CreateException(c *gin.Context) {
 		"message": "Barber hours exception added successfully",
 	})
 }
+
+func ListException(c *gin.Context) {
+	var (
+		err error
+	)
+	hoursBarbers, err := hoursBarber.ListHoursBarberException(c.Copy())
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(200, hoursBarbers)
+}

@@ -81,3 +81,26 @@ func (pg *PGHoursBarberException) HoursExecptionExists(ctx *gin.Context, hoursEx
 
 	return
 }
+
+func (pg *PGHoursBarberException) ListExeption(ctx *gin.Context) (hoursBarbers []hoursBarber.ListHoursBarberExeption, err error) {
+
+	query := `
+	select id, barbeiro_id, data_excecao, motivo, data_criacao, data_atualizacao from horario_trabalho_excecao order by data_criacao ASC
+	`
+	rows, err := pg.DB.QueryContext(ctx, query)
+	if err != nil {
+		log.Println("Erro ao consultar as exceções de horario:", err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var hoursBarber hoursBarber.ListHoursBarberExeption
+		err = rows.Scan(&hoursBarber.ID, &hoursBarber.BarberID, &hoursBarber.DateException, &hoursBarber.Reason, &hoursBarber.CreatedAt, &hoursBarber.UpdatedAt)
+		if err != nil {
+			log.Println("Erro ao consultar as exceções de horario:", err)
+			return
+		}
+		hoursBarbers = append(hoursBarbers, hoursBarber)
+	}
+	return
+}
