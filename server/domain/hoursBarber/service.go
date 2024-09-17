@@ -186,3 +186,23 @@ func (s *Service) HoursExecptionExists(ctx *gin.Context, hoursException *HoursBa
 	}
 	return s.repo.HoursExecptionExists(ctx, dados)
 }
+
+func (s *Service) ListExeption(ctx *gin.Context) (hoursBarbers []ListHoursBarberExeption, err error) {
+	exeption, err := s.repo.ListExeption(ctx)
+	if err != nil {
+		return
+	}
+
+	hoursBarbers = make([]ListHoursBarberExeption, len(exeption))
+	for i := range exeption {
+		var e ListHoursBarberExeption
+		e.ID = exeption[i].ID
+		e.BarberID = exeption[i].BarberID
+		e.DateException = exeption[i].DateException
+		e.Reason = exeption[i].Reason
+		e.CreatedAt = exeption[i].CreatedAt
+		e.UpdatedAt = exeption[i].UpdatedAt
+		hoursBarbers[i] = e
+	}
+	return
+}

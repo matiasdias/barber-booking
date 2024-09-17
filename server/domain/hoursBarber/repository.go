@@ -43,3 +43,7 @@ func (r *repository) MarkReservationAsPending(ctx *gin.Context, BarberID *int64,
 func (r *repository) HoursExecptionExists(ctx *gin.Context, hoursException *hoursBarber.HoursBarberException) (exists bool, err error) {
 	return r.pgExcption.HoursExecptionExists(ctx, hoursException)
 }
+
+func (r *repository) ListExeption(ctx *gin.Context) (hoursBarbers []hoursBarber.ListHoursBarberExeption, err error) {
+	return r.pgExcption.ListExeption(ctx)
+}

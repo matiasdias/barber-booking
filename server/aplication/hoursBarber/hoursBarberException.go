@@ -58,3 +58,34 @@ func CreateHoursBarberExecption(ctx *gin.Context, hoursBarberExecepion *CreateEx
 
 	return
 }
+
+func ListHoursBarberException(ctx *gin.Context) (hoursBarberExceptions []*ListHoursBarberExeption, err error) {
+	db, err := database.Connection()
+	if err != nil {
+		log.Printf("Failed to connect to database: %v", err)
+		return
+	}
+	defer db.Close()
+
+	var (
+		service = hoursBarber.GetService(hoursBarber.GetRepository(db))
+		dados   []hoursBarber.ListHoursBarberExeption
+	)
+	if dados, err = service.ListExeption(ctx); err != nil {
+		log.Printf("Failed to list hours exception: %v", err)
+		return
+	}
+
+	for i := range dados {
+		exeption := &ListHoursBarberExeption{
+			ID:            dados[i].ID,
+			BarberID:      dados[i].BarberID,
+			DateException: dados[i].DateException,
+			Reason:        dados[i].Reason,
+			CreatedAt:     dados[i].CreatedAt,
+			UpdatedAt:     dados[i].UpdatedAt,
+		}
+		hoursBarberExceptions = append(hoursBarberExceptions, exeption)
+	}
+	return
+}
