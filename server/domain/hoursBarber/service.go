@@ -206,3 +206,15 @@ func (s *Service) ListExeption(ctx *gin.Context) (hoursBarbers []ListHoursBarber
 	}
 	return
 }
+
+func (s *Service) DeleteHoursBarberException(ctx *gin.Context, execptionID *int64) (err error) {
+	return s.repo.DeleteExecption(ctx, execptionID)
+}
+
+func (s *Service) MarkReservationAsActive(ctx *gin.Context, barberID *int64, dataReservation *string) (marked bool, err error) {
+	return s.repo.MarkReservationAsActive(ctx, barberID, dataReservation)
+}
+
+func (s *Service) GetBarberIDByException(ctx *gin.Context, exceptionID *int64) (barberID *int64, dataExecao *string, err error) {
+	return s.repo.GetBarberIDByException(ctx, exceptionID)
+}

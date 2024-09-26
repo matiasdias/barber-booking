@@ -2,6 +2,8 @@ package hoursBarber
 
 import (
 	"api/server/aplication/hoursBarber"
+	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,4 +51,27 @@ func ListException(c *gin.Context) {
 		})
 	}
 	c.JSON(200, hoursBarbers)
+}
+
+func DeleteException(c *gin.Context) {
+	var (
+		err error
+	)
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid execption ID",
+		})
+		return
+	}
+	if err = hoursBarber.DeleteHoursBarberException(c.Copy(), &id); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Barber hours exception deleted successfully",
+	})
 }

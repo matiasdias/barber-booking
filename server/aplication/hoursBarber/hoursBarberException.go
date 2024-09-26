@@ -3,6 +3,7 @@ package hoursBarber
 import (
 	"api/server/database"
 	"api/server/domain/hoursBarber"
+	"api/server/utils"
 	"errors"
 	"log"
 
@@ -80,7 +81,7 @@ func ListHoursBarberException(ctx *gin.Context) (hoursBarberExceptions []*ListHo
 		exeption := &ListHoursBarberExeption{
 			ID:            dados[i].ID,
 			BarberID:      dados[i].BarberID,
-			DateException: dados[i].DateException,
+			DateException: utils.FormatDate(dados[i].DateException),
 			Reason:        dados[i].Reason,
 			CreatedAt:     dados[i].CreatedAt,
 			UpdatedAt:     dados[i].UpdatedAt,
@@ -88,4 +89,39 @@ func ListHoursBarberException(ctx *gin.Context) (hoursBarberExceptions []*ListHo
 		hoursBarberExceptions = append(hoursBarberExceptions, exeption)
 	}
 	return
+}
+
+func DeleteHoursBarberException(ctx *gin.Context, execptionID *int64) (err error) {
+	db, err := database.Connection()
+	if err != nil {
+		log.Printf("Failed to connect to database: %v", err)
+		return
+	}
+	defer db.Close()
+	var (
+		service    = hoursBarber.GetService(hoursBarber.GetRepository(db))
+		BarberID   *int64
+		DataExecao *string
+	)
+
+	BarberID, DataExecao, err = service.GetBarberIDByException(ctx, execptionID)
+	if err != nil {
+		return
+	}
+
+	if err = service.DeleteHoursBarberException(ctx, execptionID); err != nil {
+		return err
+	}
+
+	marked, err := service.MarkReservationAsActive(ctx, BarberID, DataExecao)
+	if err != nil {
+		log.Printf("Failed to mark reservation as active: %v", err)
+		return
+	}
+	if !marked {
+		log.Println("Nenhuma reserva foi marcada como ativa.")
+	}
+
+	return
+
 }

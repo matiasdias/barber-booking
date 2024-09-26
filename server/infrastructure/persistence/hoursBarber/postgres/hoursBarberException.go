@@ -34,7 +34,7 @@ func (pg *PGHoursBarberException) MarkReservationAsPending(ctx *gin.Context, bar
 	query := `
 	select id from reserva where barbeiro_id = $1 and data_reserva = $2 and status = 'ativo'
 	`
-	rows, err := pg.DB.QueryContext(ctx, query, barberID, hoursExeptionID)
+	rows, err := pg.DB.QueryContext(ctx, query, barberID, hoursExeptionID) // alterar para data_reserva ao inves de hoursExeptionID
 	if err != nil {
 		log.Println("Erro ao consultar reservas:", err)
 		return false, err
@@ -101,6 +101,68 @@ func (pg *PGHoursBarberException) ListExeption(ctx *gin.Context) (hoursBarbers [
 			return
 		}
 		hoursBarbers = append(hoursBarbers, hoursBarber)
+	}
+	return
+}
+
+func (pg *PGHoursBarberException) DeleteExecption(ctx *gin.Context, execptionID *int64) error {
+
+	query := `delete from horario_trabalho_excecao where id = $1`
+	_, err := pg.DB.ExecContext(ctx, query, execptionID)
+	if err != nil {
+		log.Println("Erro ao deletar exceção de horario:", err)
+		return err
+	}
+	return nil
+}
+
+func (pg *PGHoursBarberException) MarkReservationAsActive(ctx *gin.Context, barberID *int64, dataReservation *string) (bool, error) {
+	query := `
+	select id from reserva where barbeiro_id = $1 and data_reserva = $2 and status = 'pendente'
+	`
+	rows, err := pg.DB.QueryContext(ctx, query, barberID, dataReservation)
+	if err != nil {
+		log.Println("Erro ao consultar reservas:", err)
+		return false, err
+	}
+	defer rows.Close()
+
+	var reservaIDs []int64
+	for rows.Next() {
+		var reservaID int64
+		if err := rows.Scan(&reservaID); err != nil {
+			log.Println("Failed to scan reservation id: %w:", err)
+			return false, err
+		}
+		reservaIDs = append(reservaIDs, reservaID)
+	}
+
+	if len(reservaIDs) == 0 {
+		return false, nil
+	}
+
+	for _, reservaID := range reservaIDs {
+		updateQuery := `
+			update reserva set status = 'ativo' where id = $1
+		`
+		_, err := pg.DB.ExecContext(ctx, updateQuery, reservaID)
+		if err != nil {
+			log.Println("Failed to update reservation status: %w", err)
+			return false, err
+		}
+	}
+	return true, nil
+}
+
+func (pg *PGHoursBarberException) GetBarberIDByException(ctx *gin.Context, exceptionID *int64) (barberID *int64, dataExecao *string, err error) {
+
+	query := `
+	select barbeiro_id, data_excecao from horario_trabalho_excecao where id = $1
+	`
+	err = pg.DB.QueryRowContext(ctx, query, exceptionID).Scan(&barberID, &dataExecao)
+	if err != nil {
+		log.Println("Erro ao consultar o barbeiro:", err)
+		return
 	}
 	return
 }

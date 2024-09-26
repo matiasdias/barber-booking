@@ -10,7 +10,7 @@ COPY . /barber_book
 # Build the Go application
 RUN go build -o barber-book ./main.go
 
-EXPOSE 10000
+EXPOSE 5000
 
 # Start the Go application
 CMD [ "./barber-book" ]
