@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:     
   database:
     image: "postgres"
@@ -17,6 +17,9 @@ services:
     build:
        context: .
        dockerfile: ./Dockerfile
+    container_name: barber-book-backend
+    depends_on:
+      - database
     ports:
        - "5000:5000"
     restart: always

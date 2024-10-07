@@ -229,8 +229,7 @@ func (pg *PGReservation) UpdateReservation(ctx context.Context, reservationID *i
         SET 
             barbeiro_id = COALESCE($2, barbeiro_id),
             data_reserva_original = CASE 
-                WHEN data_reserva_original IS NULL THEN data_criacao 
-       			WHEN data_reserva_original = data_criacao THEN COALESCE($3, data_reserva) 
+                WHEN data_reserva != COALESCE($3, data_reserva) THEN data_reserva
        			ELSE data_reserva_original 
             END,
             data_reserva = COALESCE($3, data_reserva),

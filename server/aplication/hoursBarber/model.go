@@ -35,3 +35,12 @@ type ListHoursBarber struct {
 	Barber      Barber         `conversor:"barbeiro" json:"barbeiro"`
 	HourBarbers []HoursBarbers `conversor:"horario_trabalho" json:"horario_trabalho"`
 }
+
+type ListHoursBarberExeption struct {
+	ID            *int64     `conversor:"id" json:"id"`
+	BarberID      *int64     `conversor:"barbeiro_id" json:"barbeiro_id"`
+	DateException *string    `conversor:"data_execeção" json:"data_execeção"`
+	Reason        *string    `conversor:"motivo" json:"motivo"`
+	CreatedAt     *time.Time `conversor:"data_criacao" json:"data_criacao"`
+	UpdatedAt     *time.Time `conversor:"data_atualizacao" json:"data_atualizacao"`
+}

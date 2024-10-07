@@ -9,4 +9,6 @@ func RouterHoursBarber(r *gin.RouterGroup) {
 
 func RouterHoursExecption(r *gin.RouterGroup) {
 	r.POST("create", CreateException)
+	r.GET("list", ListException)
+	r.DELETE("delete/:id", DeleteException)
 }

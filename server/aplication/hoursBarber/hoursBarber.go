@@ -3,6 +3,7 @@ package hoursBarber
 import (
 	"api/server/database"
 	"api/server/domain/hoursBarber"
+	"api/server/utils"
 	"errors"
 	"log"
 
@@ -81,10 +82,10 @@ func ListHourBarber(ctx *gin.Context) (hoursBarbers []*ListHoursBarber, err erro
 		for j := range dados[i].HourBarbers {
 			var h HoursBarbers
 			h.DayOfWeek = dados[i].HourBarbers[j].DayOfWeek
-			h.StartTime = dados[i].HourBarbers[j].StartTime
-			h.LunchStartTime = dados[i].HourBarbers[j].LunchStartTime
-			h.LunchEndTime = dados[i].HourBarbers[j].LunchEndTime
-			h.EndTime = dados[i].HourBarbers[j].EndTime
+			h.StartTime = utils.FormatTime(dados[i].HourBarbers[j].StartTime)
+			h.LunchStartTime = utils.FormatTime(dados[i].HourBarbers[j].LunchStartTime)
+			h.LunchEndTime = utils.FormatTime(dados[i].HourBarbers[j].LunchEndTime)
+			h.EndTime = utils.FormatTime(dados[i].HourBarbers[j].EndTime)
 			h.CreatedAt = dados[i].HourBarbers[j].CreatedAt
 			h.UpdatedAt = dados[i].HourBarbers[j].UpdatedAt
 			b.HourBarbers[j] = h
