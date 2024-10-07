@@ -53,6 +53,15 @@ func ListException(c *gin.Context) {
 	c.JSON(200, hoursBarbers)
 }
 
+// DeleteException godoc
+// @Summary Remoção de exceção de hora de trabalho
+// @Description Remove uma exceção de hora de trabalho para o barbeiro
+// @Tags hoursBarber
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Exception ID"
+// @Success 200 "Barber hours exception deleted successfully"
+// @Router /barber/hoursBarberException/delete/{id} [delete]
 func DeleteException(c *gin.Context) {
 	var (
 		err error
