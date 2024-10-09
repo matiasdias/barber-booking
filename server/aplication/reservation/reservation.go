@@ -86,7 +86,6 @@ func List(ctx *gin.Context) (reservations []*ReservationList, err error) {
 		r.Barber.Contact = dados[i].Barber.Contact
 		r.Client.Name = dados[i].Client.Name
 		r.Client.Email = dados[i].Client.Email
-		r.Client.Contact = dados[i].Client.Contact
 		r.Service.Name = dados[i].Service.Name
 		r.Service.Price = dados[i].Service.Price
 		r.Service.Duration = dados[i].Service.Duration

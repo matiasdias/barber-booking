@@ -2,8 +2,11 @@ package main
 
 import (
 	_ "api/docs"
+	"api/server/auth"
 	"api/server/database"
 	"api/server/interface/barberBook"
+	"api/server/middleware"
+	"api/server/token"
 	"fmt"
 	"net/http"
 	"os"
@@ -32,6 +35,19 @@ func main() {
 	defer log.Sync()
 	database.Connection()
 
+	// Inicializar a configuração do JWT
+	err = token.InitJwt()
+	if err != nil {
+		log.Fatal("Erro ao inicializar o JWT: ", zap.Error(err))
+	}
+
+	//Inicializar a configuração do Oauth2 do Google
+	err = auth.InitAuthOauth()
+	if err != nil {
+		log.Fatal("Erro ao inicializar o Google OAuth2: ", zap.Error(err))
+	}
+
+	// Usar um grupo de goroutines para executar o servidor
 	group := errgroup.Group{}
 	group.Go(func() error {
 		port := os.Getenv("PORT")
@@ -50,12 +66,16 @@ func main() {
 
 func externalRouter(logg *zap.Logger) http.Handler {
 	r := gin.New()
-	barberBook.Router(r.Group("barber"))
+	barberGroup := r.Group("barber")
+	barberGroup.Use(middleware.JWTAuthMiddleware())
+	barberBook.Router(barberGroup)
+	barberBook.AuhRouter(r.Group("auth"))
+	api := r.Group("api")
+	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found " + " : " + c.Request.URL.String()})
 	})
 
-	api := r.Group("api")
-	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
 }

@@ -3,14 +3,15 @@ package client
 import (
 	"api/server/database"
 	"api/server/domain/client"
-	"api/server/utils"
 	"errors"
 	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Create(ctx *gin.Context, cliente *CreateClient) (err error) {
+var ErrCLientExists = errors.New("client already exists")
+
+func CreateClientFromGoogle(ctx *gin.Context, userInfo *CreateClient) error {
 	db, err := database.Connection()
 	if err != nil {
 		log.Printf("Failed to connect to database: %v", err)
@@ -18,26 +19,33 @@ func Create(ctx *gin.Context, cliente *CreateClient) (err error) {
 	}
 	defer db.Close()
 
-	service := client.GetService(client.GetRepository(db))
+	var (
+		service = client.GetService(client.GetRepository(db))
+		exists  bool
+	)
 
-	dados := &client.Client{
-		Name:     cliente.Name,
-		Email:    cliente.Email,
-		Contato:  cliente.Contato,
-		PassWord: cliente.PassWord,
+	exists, err = service.FindByEmail(ctx, userInfo.Email)
+	if err != nil {
+		log.Printf("Failed to check if client exists: %v", err)
+		return err
 	}
-	if *dados.Name == "" || *dados.Email == "" || *dados.Contato == "" || *dados.PassWord == "" {
+
+	if exists {
+		log.Println("Cliente já cadastrado, atualizando a sessão...")
+		return ErrCLientExists
+	}
+
+	if userInfo.Name == nil || *userInfo.Name == "" || userInfo.Email == nil || *userInfo.Email == "" {
 		log.Println("Failed to create client: missing required fields")
 		return errors.New("missing required fields")
 	}
-	contato, err := utils.FormatContact(dados.Contato)
-	if err != nil {
-		log.Printf("Failed to format contact: %v", err)
-		return err
-	}
-	dados.Contato = contato
 
-	if err := service.Create(ctx, dados); err != nil {
+	dados := &client.Client{
+		Name:  userInfo.Name,
+		Email: userInfo.Email,
+	}
+
+	if err = service.Create(ctx, dados); err != nil {
 		log.Printf("Failed to create client: %v", err)
 		return err
 	}
@@ -67,8 +75,6 @@ func LisClient(ctx *gin.Context) (clients []*ListClients, err error) {
 			ID:       dados[i].ID,
 			Name:     dados[i].Name,
 			Email:    dados[i].Email,
-			Contato:  dados[i].Contato,
-			PassWord: dados[i].PassWord,
 			CriadoEm: dados[i].CriadoEm,
 			UpdateEm: dados[i].UpdateEm,
 		}

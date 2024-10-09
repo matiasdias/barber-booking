@@ -3,10 +3,8 @@ package client
 import "time"
 
 type CreateClient struct {
-	Name     *string `conversor:"nome" json:"nome" binding:"required"`
-	Email    *string `conversor:"email" json:"email" binding:"required"`
-	Contato  *string `conversor:"contato" json:"contato" binding:"required"`
-	PassWord *string `conversor:"senha" json:"senha" binding:"required"`
+	Name  *string `conversor:"nome" json:"name"`
+	Email *string `conversor:"email" json:"email"`
 }
 
 type ListClients struct {

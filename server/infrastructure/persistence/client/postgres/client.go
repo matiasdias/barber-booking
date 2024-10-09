@@ -14,9 +14,9 @@ type PGClient struct {
 
 func (pg *PGClient) Create(ctx *gin.Context, cliente *client.Client) (err error) {
 
-	query := "INSERT INTO cliente ( nome, email, contato, senha ) VALUES ( $1, $2, $3, $4 ) RETURNING id"
+	query := "INSERT INTO cliente ( nome, email ) VALUES ( $1, $2) RETURNING id"
 	var clientID int64
-	err = pg.DB.QueryRowContext(ctx, query, cliente.Name, cliente.Email, cliente.Contato, cliente.PassWord).Scan(&clientID)
+	err = pg.DB.QueryRowContext(ctx, query, cliente.Name, cliente.Email).Scan(&clientID)
 	if err != nil {
 		log.Println("Erro ao consultar ID do cliente:", err)
 		return
@@ -26,7 +26,7 @@ func (pg *PGClient) Create(ctx *gin.Context, cliente *client.Client) (err error)
 
 func (pg *PGClient) List(ctx *gin.Context) (clients []client.Clients, err error) {
 
-	query := "SELECT id, nome, email, contato, senha, data_criacao, data_atualizacao FROM cliente order by data_criacao ASC"
+	query := "SELECT id, nome, email, data_criacao, data_atualizacao FROM cliente order by data_criacao ASC"
 	rows, err := pg.DB.QueryContext(ctx, query)
 	if err != nil {
 		log.Println("Erro ao consultar clientes:", err)
@@ -35,7 +35,7 @@ func (pg *PGClient) List(ctx *gin.Context) (clients []client.Clients, err error)
 	defer rows.Close()
 	for rows.Next() {
 		var client client.Clients
-		err = rows.Scan(&client.ID, &client.Name, &client.Email, &client.Contato, &client.PassWord, &client.CriadoEm, &client.UpdateEm)
+		err = rows.Scan(&client.ID, &client.Name, &client.Email, &client.CriadoEm, &client.UpdateEm)
 		if err != nil {
 			log.Println("Erro ao listar os clientes:", err)
 			return
@@ -43,4 +43,18 @@ func (pg *PGClient) List(ctx *gin.Context) (clients []client.Clients, err error)
 		clients = append(clients, client)
 	}
 	return
+}
+
+func (pg *PGClient) FindByEmail(ctx *gin.Context, email *string) (bool, error) {
+	query := "SELECT id FROM cliente WHERE email = $1"
+	var clientID int64
+	err := pg.DB.QueryRowContext(ctx, query, email).Scan(&clientID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		log.Println("Erro ao consultar ID do cliente:", err)
+		return false, err
+	}
+	return true, nil
 }
