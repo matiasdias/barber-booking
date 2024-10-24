@@ -390,6 +390,35 @@ paths:
       summary: Criação de exceções de hora de trabalho para o barbearia
       tags:
       - hoursBarber
+  /barber/hoursBarberException/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove uma exceção de hora de trabalho para o barbeiro
+      parameters:
+      - description: Exception ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Barber hours exception deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid exception ID or other error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Remoção de exceção de hora de trabalho
+      tags:
+      - hoursBarber
   /barber/list:
     get:
       consumes:

@@ -248,6 +248,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/barber/hoursBarberException/delete/{id}": {
+            "delete": {
+                "description": "Remove uma exceção de hora de trabalho para o barbeiro",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hoursBarber"
+                ],
+                "summary": "Remoção de exceção de hora de trabalho",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Exception ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Barber hours exception deleted successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid exception ID or other error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/barber/list": {
             "get": {
                 "description": "Lista todos os barbeiros da barbearia",

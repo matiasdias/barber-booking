@@ -70,7 +70,7 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 	query := `
 		SELECT r.data_reserva, r.horario_inicial_reserva, r.status, r.horario_final, r.data_criacao, r.data_atualizacao,
 		r.data_reserva_original, ba.nome, ba.cidade, ba.rua, ba.numero_residencia, ba.ponto_referencia, ba.contato, b.nome, b.contato,  
-		c.nome, c.email, c.contato, s.nome, s.preco, s.duracao
+		c.nome, c.email, s.nome, s.preco, s.duracao
 		FROM reserva r
 		JOIN barbeiro b ON b.id = r.barbeiro_id
 		JOIN cliente c ON c.id = r.cliente_id
@@ -105,7 +105,6 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			barberContact         *string
 			clientName            *string
 			clientEmail           *string
-			clientContact         *string
 			serviceName           *string
 			servicePrice          *float64
 			serviceDuration       *string
@@ -129,7 +128,6 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 			&barberContact,
 			&clientName,
 			&clientEmail,
-			&clientContact,
 			&serviceName,
 			&servicePrice,
 			&serviceDuration,
@@ -154,9 +152,8 @@ func (pg *PGReservation) List(ctx *gin.Context) (reservations []reservation.Rese
 		}
 
 		client := reservation.Client{
-			Contact: clientContact,
-			Email:   clientEmail,
-			Name:    clientName,
+			Email: clientEmail,
+			Name:  clientName,
 		}
 		service := reservation.Service{
 			Name:     serviceName,

@@ -17,3 +17,18 @@ type Config struct {
 type APIConfig struct {
 	APIPort int `json:"api_port"`
 }
+
+type AuthConfig struct {
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	RedirectURL  string `json:"redirect_url"`
+}
+
+type Jwt struct {
+	Secret     string `json:"secret"`
+	ExpireTime int64  `json:"expiration_time"`
+}
+
+type JwtConfig struct {
+	Jwt Jwt `json:"jwt_config"`
+}

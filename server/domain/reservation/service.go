@@ -104,7 +104,6 @@ func (s *Service) List(ctx *gin.Context) (reservations []ReservationList, err er
 
 		reser.Client.Name = res[i].Client.Name
 		reser.Client.Email = res[i].Client.Email
-		reser.Client.Contact = res[i].Client.Contact
 
 		reser.Service.Name = res[i].Service.Name
 		reser.Service.Price = res[i].Service.Price

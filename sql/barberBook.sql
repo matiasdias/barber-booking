@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS cliente (
 id serial PRIMARY KEY,
 nome varchar(250) NOT NULL,
 email varchar(250) NOT NULL UNIQUE,
-contato varchar(20) UNIQUE NOT NULL,
-senha varchar(100) NOT NULL,
+refresh_token varchar(255),
+refresh_token_expires_at integer,
 data_criacao timestamp DEFAULT now() NOT NULL,
 data_atualizacao timestamp
 );

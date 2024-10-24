@@ -25,3 +25,15 @@ func (r *repository) Create(ctx *gin.Context, c *client.Client) (err error) {
 func (r *repository) List(ctx *gin.Context) (clients []client.Clients, err error) {
 	return r.pg.List(ctx)
 }
+
+func (r *repository) FindByEmail(ctx *gin.Context, email *string) (existe bool, err error) {
+	return r.pg.FindByEmail(ctx, email)
+}
+
+func (r *repository) UpdateRefreshToken(ctx *gin.Context, email *string, refreshToken *string, expirationTime *int64) (err error) {
+	return r.pg.UpdateRefreshToken(ctx, email, refreshToken, expirationTime)
+}
+
+func (r *repository) GetRefreshTokenByEmail(ctx *gin.Context, email *string) (refreshToken string, err error) {
+	return r.pg.GetRefreshTokenByEmail(ctx, email)
+}

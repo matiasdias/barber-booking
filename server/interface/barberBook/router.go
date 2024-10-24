@@ -1,6 +1,7 @@
 package barberBook
 
 import (
+	"api/server/interface/barberBook/auth"
 	barberShop "api/server/interface/barberBook/baberShop"
 	"api/server/interface/barberBook/barber"
 	"api/server/interface/barberBook/client"
@@ -25,4 +26,9 @@ func Router(r *gin.RouterGroup) {
 			"message": "pong",
 		})
 	})
+}
+
+func AuhRouter(r *gin.RouterGroup) {
+	auth.RouterGoogleAuth(r.Group(""))
+	auth.RouterJwtAuth(r.Group(""))
 }
