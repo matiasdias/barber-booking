@@ -11,7 +11,6 @@ type ListClients struct {
 	ID       *int64     `json:"id" conversor:"id"`
 	Name     *string    `json:"nome" conversor:"nome"`
 	Email    *string    `json:"email" conversor:"email"`
-	Contato  *string    `json:"contato" conversor:"contato"`
 	PassWord *string    `json:"senha" conversor:"senha"`
 	CriadoEm *time.Time `json:"data_criacao" conversor:"data_criacao"`
 	UpdateEm *time.Time `json:"data_atualizacao" conversor:"data_atualizacao"`

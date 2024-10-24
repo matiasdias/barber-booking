@@ -92,6 +92,32 @@ func getUserInfo(accessToken string) (client.CreateClient, error) {
 	return userInfo, nil
 }
 
+func RefreshToken(c *gin.Context) {
+	var request struct {
+		RefreshToken string `json:"refreshToken"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	// Valida o refresh token
+	email, err := client.IsRefreshTokenValid(c, request.RefreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+	// Se o refresh token é válido, gera um novo access token
+	newAcessToken, err := jwt.GenerateJWT(&email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"accessToken": newAcessToken})
+}
+
 //func getUserPhone(accessToken string) (string, error) {
 //	// Define o endpoint da API People para pegar o número de telefone do próprio usuário
 //	url := "https://people.googleapis.com/v1/people/me?personFields=phoneNumbers"

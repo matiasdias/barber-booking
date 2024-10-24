@@ -30,4 +30,5 @@ func Router(r *gin.RouterGroup) {
 
 func AuhRouter(r *gin.RouterGroup) {
 	auth.RouterGoogleAuth(r.Group(""))
+	auth.RouterJwtAuth(r.Group(""))
 }

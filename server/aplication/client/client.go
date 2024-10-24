@@ -3,7 +3,9 @@ package client
 import (
 	"api/server/database"
 	"api/server/domain/client"
+	"api/server/token"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +25,6 @@ func CreateClientFromGoogle(ctx *gin.Context, userInfo *CreateClient) error {
 		service = client.GetService(client.GetRepository(db))
 		exists  bool
 	)
-
 	exists, err = service.FindByEmail(ctx, userInfo.Email)
 	if err != nil {
 		log.Printf("Failed to check if client exists: %v", err)
@@ -31,23 +32,39 @@ func CreateClientFromGoogle(ctx *gin.Context, userInfo *CreateClient) error {
 	}
 
 	if exists {
-		log.Println("Cliente já cadastrado, atualizando a sessão...")
+		log.Println("Cliente já cadastrado, atualizando o refresh token...")
+
+		refreshTokenUpdate, err := token.GenerateRefreshToken(userInfo.Email)
+		if err != nil {
+			log.Printf("Failed to generate refresh token: %v", err)
+			return err
+		}
+		err = service.UpdateRefreshToken(ctx, userInfo.Email, &refreshTokenUpdate, &client.ExpirationTime)
+		if err != nil {
+			log.Printf("Failed to update refresh token: %v", err)
+			return err
+		}
 		return ErrCLientExists
-	}
-
-	if userInfo.Name == nil || *userInfo.Name == "" || userInfo.Email == nil || *userInfo.Email == "" {
-		log.Println("Failed to create client: missing required fields")
-		return errors.New("missing required fields")
-	}
-
-	dados := &client.Client{
-		Name:  userInfo.Name,
-		Email: userInfo.Email,
-	}
-
-	if err = service.Create(ctx, dados); err != nil {
-		log.Printf("Failed to create client: %v", err)
-		return err
+	} else {
+		if userInfo.Name == nil || *userInfo.Name == "" || userInfo.Email == nil || *userInfo.Email == "" {
+			log.Println("Failed to create client: missing required fields")
+			return errors.New("missing required fields")
+		}
+		refreshToken, err := token.GenerateRefreshToken(userInfo.Email)
+		if err != nil {
+			log.Printf("Failed to generate refresh token: %v", err)
+			return err
+		}
+		dados := &client.Client{
+			Name:                  userInfo.Name,
+			Email:                 userInfo.Email,
+			RefreshToken:          &refreshToken,
+			RefreshTokenExpiresAt: &client.ExpirationTime,
+		}
+		if err = service.Create(ctx, dados); err != nil {
+			log.Printf("Failed to create client: %v", err)
+			return err
+		}
 	}
 
 	return nil
@@ -81,4 +98,29 @@ func LisClient(ctx *gin.Context) (clients []*ListClients, err error) {
 		clients = append(clients, cli)
 	}
 	return
+}
+
+func IsRefreshTokenValid(ctx *gin.Context, refreshToken string) (string, error) {
+	claims, err := token.ValidateRefreshToken(refreshToken)
+	if err != nil {
+		return "", err
+	}
+	email := claims.Email
+
+	db, err := database.Connection()
+	if err != nil {
+		log.Printf("Failed to connect to database: %v", err)
+		return "", err
+	}
+	defer db.Close()
+
+	var (
+		service = client.GetService(client.GetRepository(db))
+	)
+
+	storedToken, err := service.GetRefreshTokenByEmail(ctx, &email)
+	if err != nil || storedToken != refreshToken {
+		return "", fmt.Errorf("invalid or expired token")
+	}
+	return email, nil
 }
