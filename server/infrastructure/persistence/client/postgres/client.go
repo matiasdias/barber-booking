@@ -16,9 +16,9 @@ type PGClient struct {
 
 func (pg *PGClient) Create(ctx *gin.Context, cliente *client.Client) (err error) {
 
-	query := "INSERT INTO cliente ( nome, email, refresh_token, refresh_token_expires_at ) VALUES ( $1, $2, $3, $4) RETURNING id"
+	query := "INSERT INTO cliente ( nome, email, refresh_token ) VALUES ( $1, $2, $3) RETURNING id"
 	var clientID int64
-	err = pg.DB.QueryRowContext(ctx, query, cliente.Name, cliente.Email, cliente.RefreshToken, cliente.RefreshTokenExpiresAt).Scan(&clientID)
+	err = pg.DB.QueryRowContext(ctx, query, cliente.Name, cliente.Email, cliente.RefreshToken).Scan(&clientID)
 	if err != nil {
 		log.Println("Erro ao consultar ID do cliente:", err)
 		return
@@ -61,17 +61,17 @@ func (pg *PGClient) FindByEmail(ctx *gin.Context, email *string) (bool, error) {
 	return true, nil
 }
 
-func (pg *PGClient) UpdateRefreshToken(ctx context.Context, email *string, refreshToken *string, expirationTime *int64) error {
+func (pg *PGClient) UpdateRefreshToken(ctx context.Context, email *string, refreshToken *string) error {
 	query := `
 		UPDATE cliente 
-		SET refresh_token = $1, refresh_token_expires_at = $2 
-		WHERE id = (SELECT id FROM cliente WHERE email = $3) 
+		SET refresh_token = $1 
+		WHERE id = (SELECT id FROM cliente WHERE email = $2) 
 		RETURNING id
 	`
 
 	var id int
 
-	err := pg.DB.QueryRowContext(ctx, query, refreshToken, expirationTime, email).Scan(&id)
+	err := pg.DB.QueryRowContext(ctx, query, refreshToken, email).Scan(&id)
 	if err != nil {
 		return fmt.Errorf("failed to update refresh token: %v", err)
 	}

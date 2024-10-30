@@ -39,7 +39,7 @@ func CreateClientFromGoogle(ctx *gin.Context, userInfo *CreateClient) error {
 			log.Printf("Failed to generate refresh token: %v", err)
 			return err
 		}
-		err = service.UpdateRefreshToken(ctx, userInfo.Email, &refreshTokenUpdate, &client.ExpirationTime)
+		err = service.UpdateRefreshToken(ctx, userInfo.Email, &refreshTokenUpdate)
 		if err != nil {
 			log.Printf("Failed to update refresh token: %v", err)
 			return err
@@ -56,10 +56,9 @@ func CreateClientFromGoogle(ctx *gin.Context, userInfo *CreateClient) error {
 			return err
 		}
 		dados := &client.Client{
-			Name:                  userInfo.Name,
-			Email:                 userInfo.Email,
-			RefreshToken:          &refreshToken,
-			RefreshTokenExpiresAt: &client.ExpirationTime,
+			Name:         userInfo.Name,
+			Email:        userInfo.Email,
+			RefreshToken: &refreshToken,
 		}
 		if err = service.Create(ctx, dados); err != nil {
 			log.Printf("Failed to create client: %v", err)

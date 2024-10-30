@@ -3,7 +3,6 @@ id serial PRIMARY KEY,
 nome varchar(250) NOT NULL,
 email varchar(250) NOT NULL UNIQUE,
 refresh_token varchar(255),
-refresh_token_expires_at integer,
 data_criacao timestamp DEFAULT now() NOT NULL,
 data_atualizacao timestamp
 );

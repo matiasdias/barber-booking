@@ -21,11 +21,6 @@ func Router(r *gin.RouterGroup) {
 	barber.RouterBarber(r.Group(""))
 	barberShop.RouterBarberShop(r.Group("barberShop"))
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
 }
 
 func AuhRouter(r *gin.RouterGroup) {

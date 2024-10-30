@@ -2,6 +2,8 @@ package service
 
 import (
 	"api/server/aplication/service"
+	"api/server/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,24 +18,26 @@ import (
 // @Success 200 "Sem conteúdo"
 // @Router /barber/service/create [post]
 func Create(c *gin.Context) {
-	var (
-		req service.CreateService
-		err error
-	)
-	if err = c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
+	var req service.CreateService
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		customErr := utils.New(400, "missing or invalid fields", err)
+		c.Set("error", customErr)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err = service.Create(c.Copy(), &req); err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
+	// Chama a função de criação de serviço
+	if err := service.Create(c.Copy(), &req); err != nil {
+		// Cria um erro personalizado
+		customErr := utils.New(400, "service creation failed", err)
+		// Adiciona o erro ao contexto
+		c.Set("error", customErr)
+		// Retorna a resposta
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"message": "Service created successfully",
 	})
 

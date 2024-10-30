@@ -5,6 +5,7 @@ import (
 	"api/server/auth"
 	"api/server/database"
 	"api/server/interface/barberBook"
+	"api/server/logger"
 	"api/server/middleware"
 	"api/server/token"
 	"fmt"
@@ -31,20 +32,32 @@ func main() {
 		err error
 		log *zap.Logger
 	)
-	// inicializar o logger
+
+	log, err = logger.ConfigLogger()
+	if err != nil {
+		zap.L().Fatal("Erro ao inicializar o logger: ", zap.Error(err))
+		return
+	}
 	defer log.Sync()
+	zap.ReplaceGlobals(log)
+
+	log.Info("Aplicação iniciada",
+		zap.String("versao", "1.0"),
+	)
+
+	// Conecta ao banco de dados
 	database.Connection()
 
 	// Inicializar a configuração do JWT
 	err = token.InitJwt()
 	if err != nil {
-		log.Fatal("Erro ao inicializar o JWT: ", zap.Error(err))
+		zap.L().Fatal("Erro ao inicializar o JWT: ", zap.Error(err))
 	}
 
 	//Inicializar a configuração do Oauth2 do Google
 	err = auth.InitAuthOauth()
 	if err != nil {
-		log.Fatal("Erro ao inicializar o Google OAuth2: ", zap.Error(err))
+		zap.L().Fatal("Erro ao inicializar o Google OAuth2: ", zap.Error(err))
 	}
 
 	// Usar um grupo de goroutines para executar o servidor
@@ -60,16 +73,26 @@ func main() {
 
 	if err = group.Wait(); err != nil {
 		log.Error("Error while serving the application", zap.Error(err))
-	} // espera que todas as rotinas adicionadas ao grupo sejam concluidas
+	}
 
 }
 
 func externalRouter(logg *zap.Logger) http.Handler {
 	r := gin.New()
+	r.Use(
+		middleware.RequestLogger(logg),
+	)
+
 	barberGroup := r.Group("barber")
 	barberGroup.Use(middleware.JWTAuthMiddleware())
 	barberBook.Router(barberGroup)
+
 	barberBook.AuhRouter(r.Group("auth"))
+
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "up"})
+	})
+
 	api := r.Group("api")
 	api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
