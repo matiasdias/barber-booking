@@ -8,9 +8,7 @@ import (
 	"api/server/logger"
 	"api/server/middleware"
 	"api/server/token"
-	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/fvbock/endless"
 
@@ -63,10 +61,7 @@ func main() {
 	// Usar um grupo de goroutines para executar o servidor
 	group := errgroup.Group{}
 	group.Go(func() error {
-		port := os.Getenv("PORT")
-		if port == "" {
-			port = fmt.Sprintf("%d", database.APIConfigInfo.APIPort)
-		}
+		port := database.APIConfigInfo.APIPort
 		return endless.ListenAndServe(":"+port, externalRouter(log))
 		//return endless.ListenAndServe(fmt.Sprintf(":%d", database.APIConfigInfo.APIPort), externalRouter(log))
 	})

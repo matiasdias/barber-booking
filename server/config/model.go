@@ -15,13 +15,17 @@ type Config struct {
 }
 
 type APIConfig struct {
-	APIPort int `json:"api_port"`
+	APIPort string `json:"api_port"`
 }
 
-type AuthConfig struct {
+type Credentials struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 	RedirectURL  string `json:"redirect_url"`
+}
+
+type GoogleConfig struct {
+	Oauth Credentials `json:"google_oauth"`
 }
 
 type Jwt struct {

@@ -72,37 +72,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/barber/client/create": {
-            "post": {
-                "description": "Cria um novo cliente",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client"
-                ],
-                "summary": "Create client",
-                "parameters": [
-                    {
-                        "description": "Create client",
-                        "name": "client",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/client.CreateClient"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Sem conteúdo"
-                    }
-                }
-            }
-        },
         "/barber/client/list": {
             "get": {
                 "description": "Lista todos os clientes da barbearia",
@@ -272,22 +241,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Barber hours exception deleted successfully",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid exception ID or other error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Barber hours exception deleted successfully"
                     }
                 }
             }
@@ -595,35 +549,9 @@ const docTemplate = `{
                 }
             }
         },
-        "client.CreateClient": {
-            "type": "object",
-            "required": [
-                "contato",
-                "email",
-                "nome",
-                "senha"
-            ],
-            "properties": {
-                "contato": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "nome": {
-                    "type": "string"
-                },
-                "senha": {
-                    "type": "string"
-                }
-            }
-        },
         "client.ListClients": {
             "type": "object",
             "properties": {
-                "contato": {
-                    "type": "string"
-                },
                 "data_atualizacao": {
                     "type": "string"
                 },

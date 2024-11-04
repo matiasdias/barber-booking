@@ -1,6 +1,6 @@
 {   
     "environment": "development",
-    "api_port":5000,
+    "api_port":"${API_PORT}",
     "development": {
         "db_name": "barber_book",
         "db_user": "postgres",
@@ -15,9 +15,11 @@
         "db_host": "database",
         "db_port": "5432"
     },
-
-
-    "redirect_url":"http://localhost:5000/auth/callback",
+    "google_oauth": {
+        "client_id": "${GOOGLE_CLIENT_ID}",
+        "client_secret": "${GOOGLE_CLIENT_SECRET}",
+        "redirect_url":"http://localhost:5000/auth/callback"
+    },
 
     "jwt_config": {
         "secret": "c8MMWBjYvk4PBfKQwun2Nf99TDmjKVEd+tB9WRyuPEg=",

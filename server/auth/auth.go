@@ -2,8 +2,7 @@ package auth
 
 import (
 	"api/server/config"
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"log"
 
 	"golang.org/x/oauth2"
@@ -14,34 +13,20 @@ var (
 	err               error
 )
 
-func loadAuthConfig(filePath string) (config.AuthConfig, error) {
-	var config config.AuthConfig
-
-	// Lê o conteúdo do arquivo JSON
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return config, err
-	}
-
-	// Decodifica o conteúdo do arquivo JSON para a estrutura Config
-	if err := json.Unmarshal(data, &config); err != nil {
-		return config, err
-	}
-
-	return config, nil
-}
-
 func InitAuthOauth() (err error) {
-	googleConfig, err := loadAuthConfig("config/config.api.json")
+	config, err := config.LoadAuthConfig("config/config.api.json")
 	if err != nil {
 		log.Printf("Erro ao carregar a configuração do Google: %v", err)
 		return err
 	}
-
+	if config.Oauth.ClientID == "" || config.Oauth.ClientSecret == "" {
+		log.Println("Erro: GOOGLE_CLIENT_ID ou GOOGLE_CLIENT_SECRET não estão definidos.")
+		return fmt.Errorf("credenciais do Google não estão definidas")
+	}
 	GoogleOauthConfig = &oauth2.Config{
-		ClientID:     googleConfig.ClientID,
-		ClientSecret: googleConfig.ClientSecret,
-		RedirectURL:  googleConfig.RedirectURL,
+		ClientID:     config.Oauth.ClientID,
+		ClientSecret: config.Oauth.ClientSecret,
+		RedirectURL:  config.Oauth.RedirectURL,
 		Scopes: []string{
 			"openid",
 			"https://www.googleapis.com/auth/userinfo.email",

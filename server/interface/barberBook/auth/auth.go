@@ -30,7 +30,7 @@ func CallBack(c *gin.Context) {
 		return
 	}
 
-	// troca o codigo pelo token
+	// troca o codigo pelo token do google
 	token, err := auth.GoogleOauthConfig.Exchange(c, code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -39,7 +39,7 @@ func CallBack(c *gin.Context) {
 		return
 	}
 
-	// Usa o token para acessar as informações do usuario
+	// Usa o token do google para acessar as informações do usuario
 	userInfo, err := getUserInfo(token.AccessToken)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -68,11 +68,20 @@ func CallBack(c *gin.Context) {
 		})
 		return
 	}
+	claims, err := jwt.ValidateToken(jwtToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to validate JWT: " + err.Error(),
+		})
+		return
+	}
 
 	// Enviar o token JWT de volta ao cliente
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Client authenticated successfully",
+		"email":   userInfo.Email,
 		"token":   jwtToken,
+		"expired": claims.ExpiresAt,
 	})
 }
 

@@ -20,7 +20,7 @@ func RequestLogger(logger *zap.Logger) gin.HandlerFunc {
 			zap.Time("date", startTime),
 			zap.String("IP", c.ClientIP()),
 			zap.String("Method", c.Request.Method),
-			zap.String("Path", c.Request.URL.String()),
+			zap.String("Path", c.Request.URL.Path),
 			zap.String("User-agent", c.Request.UserAgent()),
 		}
 

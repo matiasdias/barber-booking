@@ -2,9 +2,7 @@ package token
 
 import (
 	"api/server/config"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"time"
 
@@ -22,25 +20,8 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func loadJwtConfig(filePath string) (config.JwtConfig, error) {
-	var jwtRead config.JwtConfig
-
-	// Lê o conteúdo do arquivo JSON
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return jwtRead, err
-	}
-
-	// Decodifica o conteúdo do arquivo JSON para a estrutura APIConfig
-	if err := json.Unmarshal(data, &jwtRead); err != nil {
-		return jwtRead, err
-	}
-
-	return jwtRead, nil
-}
-
 func InitJwt() error {
-	Jwt, err = loadJwtConfig("config/config.api.json")
+	Jwt, err = config.LoadJwtConfig("config/config.api.json")
 	if err != nil {
 		log.Printf("Erro ao carregar a configuração do JWT: %v", err)
 		return err
