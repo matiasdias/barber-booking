@@ -20,6 +20,10 @@ services:
     container_name: barber-book-backend
     depends_on:
       - database
+    environment:
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - API_PORT=${API_PORT}
     ports:
        - "5000:5000"
     restart: always
