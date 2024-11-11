@@ -29,9 +29,8 @@ type Barber struct {
 }
 
 type Client struct {
-	Name    *string `json:"nome" conversor:"nome"`
-	Email   *string `json:"email" conversor:"email"`
-	Contact *string `json:"contato" conversor:"contato"`
+	Name  *string `json:"nome" conversor:"nome"`
+	Email *string `json:"email" conversor:"email"`
 }
 
 type Service struct {

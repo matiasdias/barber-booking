@@ -2,6 +2,8 @@ package hoursBarber
 
 import (
 	"api/server/aplication/hoursBarber"
+	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,5 +37,50 @@ func CreateException(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "Barber hours exception added successfully",
+	})
+}
+
+func ListException(c *gin.Context) {
+	var (
+		err error
+	)
+	hoursBarbers, err := hoursBarber.ListHoursBarberException(c.Copy())
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+	}
+	c.JSON(200, hoursBarbers)
+}
+
+// DeleteException godoc
+// @Summary Remoção de exceção de hora de trabalho
+// @Description Remove uma exceção de hora de trabalho para o barbeiro
+// @Tags hoursBarber
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Exception ID"
+// @Success 200 "Barber hours exception deleted successfully"
+// @Router /barber/hoursBarberException/delete/{id} [delete]
+func DeleteException(c *gin.Context) {
+	var (
+		err error
+	)
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid execption ID",
+		})
+		return
+	}
+	if err = hoursBarber.DeleteHoursBarberException(c.Copy(), &id); err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Barber hours exception deleted successfully",
 	})
 }

@@ -39,3 +39,12 @@ type HoursBarberException struct {
 	CreatedAt     *time.Time `conversor:"data_criacao"`
 	UpdatedAt     *time.Time `conversor:"data_atualizacao"`
 }
+
+type ListHoursBarberExeption struct {
+	ID            *int64     `conversor:"id"`
+	BarberID      *int64     `conversor:"barbeiro_id"`
+	DateException *string    `conversor:"data_execeção"`
+	Reason        *string    `conversor:"motivo"`
+	CreatedAt     *time.Time `conversor:"data_criacao"`
+	UpdatedAt     *time.Time `conversor:"data_atualizacao"`
+}

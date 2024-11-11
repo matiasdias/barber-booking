@@ -23,10 +23,9 @@ func GetRepository(db *sql.DB) IClient {
 
 func (s *Service) Create(ctx *gin.Context, clients *Client) (err error) {
 	dados := &client.Client{
-		Name:     clients.Name,
-		Email:    clients.Email,
-		Contato:  clients.Contato,
-		PassWord: clients.PassWord,
+		Name:         clients.Name,
+		Email:        clients.Email,
+		RefreshToken: clients.RefreshToken,
 	}
 	return s.repo.Create(ctx, dados)
 }
@@ -43,11 +42,21 @@ func (s *Service) List(ctx *gin.Context) (clients []Clients, err error) {
 		cliente.ID = clientes[i].ID
 		cliente.Name = clientes[i].Name
 		cliente.Email = clientes[i].Email
-		cliente.Contato = clientes[i].Contato
-		cliente.PassWord = clientes[i].PassWord
 		cliente.CriadoEm = clientes[i].CriadoEm
 		cliente.UpdateEm = clientes[i].UpdateEm
 		clients[i] = cliente
 	}
 	return
+}
+
+func (s *Service) FindByEmail(ctx *gin.Context, email *string) (existe bool, err error) {
+	return s.repo.FindByEmail(ctx, email)
+}
+
+func (s *Service) UpdateRefreshToken(ctx *gin.Context, email *string, refreshToken *string) (err error) {
+	return s.repo.UpdateRefreshToken(ctx, email, refreshToken)
+}
+
+func (s *Service) GetRefreshTokenByEmail(ctx *gin.Context, email *string) (refreshToken string, err error) {
+	return s.repo.GetRefreshTokenByEmail(ctx, email)
 }
